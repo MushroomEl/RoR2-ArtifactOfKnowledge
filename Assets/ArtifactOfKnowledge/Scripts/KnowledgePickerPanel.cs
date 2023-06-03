@@ -209,7 +209,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 					tooltipContent.bodyToken = voidDescTokens[UnityEngine.Random.Range(0, voidDescTokens.Length)];
 				} else {
 					tooltipContent.titleToken = pdef.nameToken;
-					tooltipContent.titleColor = pdef.baseColor;
+					tooltipContent.titleColor = pdef.darkColor;
 					tooltipContent.bodyColor = pdef.darkColor;
 					if(idef)
 						tooltipContent.bodyToken = idef.pickupToken;
