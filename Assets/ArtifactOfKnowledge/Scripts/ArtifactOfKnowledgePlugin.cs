@@ -9,6 +9,7 @@ using System.Linq;
 using UnityEngine.AddressableAssets;
 using System;
 using RoR2;
+using UnityEngine.Networking;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     [BepInPlugin(ModGuid, ModName, ModVer)]
@@ -173,6 +174,23 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                     }
                     foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
                         kcm.ClientUpdateXpBar();
+                    }
+                }
+            };
+
+            xpScalingConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
+                if(NetworkServer.active && Run.instance && KnowledgeArtifact.instance.IsActiveAndEnabled()) {
+                    foreach(var kcm in KnowledgeCharacterManager.readOnlyInstances) {
+                        kcm.xp = 0f;
+                        kcm.ServerCalculateXpToNextLevel();
+                    }
+                }
+            };
+
+            itemSelectionConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
+                if(NetworkServer.active && Run.instance && KnowledgeArtifact.instance.IsActiveAndEnabled()) {
+                    foreach(var kcm in KnowledgeCharacterManager.readOnlyInstances) {
+                        kcm.ServerGenerateSelection();
                     }
                 }
             };
