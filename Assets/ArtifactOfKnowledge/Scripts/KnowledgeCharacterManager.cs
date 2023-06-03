@@ -19,26 +19,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
             managerPrefab = ArtifactOfKnowledgePlugin.resources.LoadAsset<GameObject>("Assets/ArtifactOfKnowledge/Prefabs/KnowledgeCharacterManager.prefab");
             R2API.PrefabAPI.RegisterNetworkPrefab(managerPrefab);
-
-            On.RoR2.TeamManager.GiveTeamExperience += TeamManager_GiveTeamExperience;
-            RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
-        }
-
-        private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj) {
-            if(NetworkServer.active && obj.attackerTeamIndex == TeamIndex.Player && (ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.KillsExponential || ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.KillsLinear)) {
-                foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
-                    kcm.ServerAddXp(1u);
-                }
-            }
-        }
-
-        private void TeamManager_GiveTeamExperience(On.RoR2.TeamManager.orig_GiveTeamExperience orig, TeamManager self, TeamIndex teamIndex, ulong experience) {
-            orig(self, teamIndex, experience);
-            if(teamIndex == TeamIndex.Player && NetworkServer.active && ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.Vanilla) {
-                foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
-                    kcm.ServerAddXp(experience);
-                }
-            }
         }
     }
 

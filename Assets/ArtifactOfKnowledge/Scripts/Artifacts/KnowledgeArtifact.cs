@@ -2,6 +2,7 @@
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
+using XpGainMode = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.XpScalingConfig.XpGainMode;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     public class KnowledgeArtifact : Artifact<KnowledgeArtifact> {
@@ -37,6 +38,8 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             SceneDirector.onGenerateInteractableCardSelection += OnGenerateInteractableCardSelection;
             DirectorCardCategorySelection.calcCardWeight += CalcCardWeight;
             On.RoR2.UI.HUD.Awake += HUD_Awake;
+            On.RoR2.TeamManager.GiveTeamExperience += TeamManager_GiveTeamExperience;
+            RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
         }
 
         public override void Uninstall() {
@@ -49,6 +52,8 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             SceneDirector.onGenerateInteractableCardSelection -= OnGenerateInteractableCardSelection;
             DirectorCardCategorySelection.calcCardWeight -= CalcCardWeight;
             On.RoR2.UI.HUD.Awake -= HUD_Awake;
+            On.RoR2.TeamManager.GiveTeamExperience -= TeamManager_GiveTeamExperience;
+            RoR2.GlobalEventManager.onCharacterDeathGlobal -= GlobalEventManager_onCharacterDeathGlobal;
         }
 
 
@@ -108,6 +113,23 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         private void OnPrePopulateSceneServer(SceneDirector sceneDirector) {
             if(!IsActiveAndEnabled() || RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.Sacrifice)) return; //sacrifice performs same code
             sceneDirector.onPopulateCreditMultiplier *= 0.5f;
+        }
+
+        private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj) {
+            if(NetworkServer.active && IsActiveAndEnabled() && obj.attackerTeamIndex == TeamIndex.Player && (ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.KillsExponential || ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.KillsLinear)) {
+                foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
+                    kcm.ServerAddXp(1u);
+                }
+            }
+        }
+
+        private void TeamManager_GiveTeamExperience(On.RoR2.TeamManager.orig_GiveTeamExperience orig, TeamManager self, TeamIndex teamIndex, ulong experience) {
+            orig(self, teamIndex, experience);
+            if(NetworkServer.active && IsActiveAndEnabled() && teamIndex == TeamIndex.Player && ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.Vanilla) {
+                foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
+                    kcm.ServerAddXp(experience);
+                }
+            }
         }
     }
 }
