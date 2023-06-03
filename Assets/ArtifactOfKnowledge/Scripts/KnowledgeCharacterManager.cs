@@ -131,7 +131,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                         break;
                     case XpGainMode.KillsLinear:
                     case XpGainMode.TimeLinear:
-                        nextLevelXp = thisLevelXp + (ulong)(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling);
+                        nextLevelXp = thisLevelXp + (ulong)ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp + (ulong)((ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling) * (unspentUpgrades + spentUpgrades));
                         break;
                 }
                 
