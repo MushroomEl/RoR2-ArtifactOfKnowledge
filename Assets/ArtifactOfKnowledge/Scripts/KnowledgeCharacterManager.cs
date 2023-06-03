@@ -123,14 +123,11 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 unspentUpgrades++;
                 xp -= xpToNextLevel;
                 switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScalingType) {
-                    case ScalingType.Vanilla:
-                        xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, level);
-                        break;
                     case ScalingType.Exponential:
-                        xpToNextLevel *= ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
+                        xpToNextLevel = ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, level);
                         break;
                     case ScalingType.Linear:
-                        xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
+                        xpToNextLevel = ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp + level * ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
                         break;
                 }
             }

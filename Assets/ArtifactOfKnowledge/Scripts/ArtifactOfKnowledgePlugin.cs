@@ -63,7 +63,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             [AutoConfigRoOChoice()]
             public XpSource Source { get; internal set; } = XpSource.LevelXp;
 
-            [AutoConfig("Determines how the StartingXp and XpScaling options apply.\r\n - Vanilla: use vanilla level-up scaling, each level takes +(StartingXp * XpScaling^Levels) more than the last.\r\n - Exponential: each level takes *XpScaling more than the last. Shallower scaling for only the first few levels compared to Vanilla.\r\n - Linear: each level takes +XpScaling more than the last. Much shallower scaling compared to Vanilla and Exponential, more suitable for Time/Kills sources.", AutoConfigFlags.None)]
+            [AutoConfig("Determines how the StartingXp and XpScaling options apply.\r\n - Exponential: each level takes *XpScaling more than the last. Matches scaling of the vanilla experience system.\r\n - Linear: each level takes +XpScaling more than the last. Much shallower scaling compared to Exponential, more suitable for Time/Kills sources.", AutoConfigFlags.None)]
             [AutoConfigRoOChoice()]
             public ScalingType XpScalingType { get; internal set; } = ScalingType.Vanilla;
 
