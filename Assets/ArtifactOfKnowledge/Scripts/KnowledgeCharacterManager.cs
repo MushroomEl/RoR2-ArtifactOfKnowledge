@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using XpGainMode = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.XpScalingConfig.XpGainMode;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     public class KnowledgeCharacterManagerModule : TILER2.T2Module<KnowledgeCharacterManagerModule> {
@@ -20,11 +21,20 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             R2API.PrefabAPI.RegisterNetworkPrefab(managerPrefab);
 
             On.RoR2.TeamManager.GiveTeamExperience += TeamManager_GiveTeamExperience;
+            RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
+        }
+
+        private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj) {
+            if(NetworkServer.active && obj.attackerTeamIndex == TeamIndex.Player && (ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.KillsExponential || ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.KillsLinear)) {
+                foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
+                    kcm.ServerAddXp(1u);
+                }
+            }
         }
 
         private void TeamManager_GiveTeamExperience(On.RoR2.TeamManager.orig_GiveTeamExperience orig, TeamManager self, TeamIndex teamIndex, ulong experience) {
             orig(self, teamIndex, experience);
-            if(teamIndex == TeamIndex.Player && NetworkServer.active) {
+            if(teamIndex == TeamIndex.Player && NetworkServer.active && ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.Vanilla) {
                 foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
                     kcm.ServerAddXp(experience);
                 }
@@ -47,7 +57,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         [SyncVar]
         public ulong xp = 0;
         [SyncVar]
-        public ulong nextLevelXp = (ulong)ArtifactOfKnowledgePlugin.serverConfig.StartingXp;
+        public ulong nextLevelXp = (ulong)ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp;
         [SyncVar]
         public ulong thisLevelXp = 0;
 
@@ -68,6 +78,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public static event ModifyItemSuperSelectionEventHandler ModifyItemSuperSelection;
 
         const int SAFETY_LEVEL_CAP = 9001;
+        float xpStopwatch = 1f;
 
         public enum UpgradeActionCode {
             Select, Reroll, Banish
@@ -95,6 +106,16 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                     ClientShowUpgradePanel();
             }
         }
+
+        void FixedUpdate() {
+            if(NetworkServer.active && (ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.TimeExponential || ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.TimeLinear)) {
+                xpStopwatch -= Time.fixedDeltaTime;
+                if(xpStopwatch <= 0f) {
+                    xpStopwatch += 1f;
+                    ServerAddXp(1u);
+                }
+            }
+        }
         #endregion
 
         #region Server
@@ -119,7 +140,22 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 changedLevel = true;
                 unspentUpgrades++;
                 thisLevelXp = nextLevelXp;
-                nextLevelXp = (ulong)TeamManager.InitialCalcExperience(unspentUpgrades + spentUpgrades + 2, ArtifactOfKnowledgePlugin.serverConfig.StartingXp, ArtifactOfKnowledgePlugin.serverConfig.XpScaling);
+                switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode) {
+                    case XpGainMode.Vanilla:
+                        nextLevelXp = (ulong)TeamManager.InitialCalcExperience(unspentUpgrades + spentUpgrades + 2, ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp, ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling);
+                        break;
+                    case XpGainMode.KillsExponential:
+                    case XpGainMode.TimeExponential:
+                        nextLevelXp = (ulong)(ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, unspentUpgrades + spentUpgrades));
+                        break;
+                    case XpGainMode.KillsLinear:
+                    case XpGainMode.TimeLinear:
+                        nextLevelXp = (ulong)(ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp
+                            * (1f + (ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling
+                                    * (unspentUpgrades + spentUpgrades))));
+                        break;
+                }
+                
             }
             if(changedLevel)
                 RpcLevelUpEvent();
@@ -193,33 +229,33 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
             Dictionary<ItemTier, float> tierWeights = new Dictionary<ItemTier, float>();
 
-            bool upgradeUncommon = (spentUpgrades % ArtifactOfKnowledgePlugin.serverConfig.UncommonLevelInterval) == (ArtifactOfKnowledgePlugin.serverConfig.UncommonLevelInterval - 1);
-            bool upgradeRare = (spentUpgrades % ArtifactOfKnowledgePlugin.serverConfig.RareLevelInterval) == (ArtifactOfKnowledgePlugin.serverConfig.RareLevelInterval - 1);
+            bool upgradeUncommon = (spentUpgrades % ArtifactOfKnowledgePlugin.itemSelectionConfig.UncommonLevelInterval) == (ArtifactOfKnowledgePlugin.itemSelectionConfig.UncommonLevelInterval - 1);
+            bool upgradeRare = (spentUpgrades % ArtifactOfKnowledgePlugin.itemSelectionConfig.RareLevelInterval) == (ArtifactOfKnowledgePlugin.itemSelectionConfig.RareLevelInterval - 1);
 
             if(upgradeRare) { //TODO: migrate this to a standalone module using ModifyItemTierWeights
                 tierWeights[ItemTier.Tier1] = 0f;
                 tierWeights[ItemTier.Tier2] = 0f;
-                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.serverConfig.BaseT1Chance;
+                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance;
                 tierWeights[ItemTier.VoidTier1] = 0f;
                 tierWeights[ItemTier.VoidTier2] = 0f;
-                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.serverConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.serverConfig.BaseVoidChance;
+                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
             } else if(upgradeUncommon) {
                 tierWeights[ItemTier.Tier1] = 0f;
-                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.serverConfig.BaseT1Chance;
+                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance;
                 tierWeights[ItemTier.Tier3] = 0f;
                 tierWeights[ItemTier.VoidTier1] = 0f;
-                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.serverConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.serverConfig.BaseVoidChance;
+                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
                 tierWeights[ItemTier.VoidTier3] = 0f;
             } else {
-                tierWeights[ItemTier.Tier1] = ArtifactOfKnowledgePlugin.serverConfig.BaseT1Chance;
-                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.serverConfig.BaseT2Chance;
-                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.serverConfig.BaseT3Chance;
-                tierWeights[ItemTier.VoidTier1] = ArtifactOfKnowledgePlugin.serverConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.serverConfig.BaseVoidChance;
-                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.serverConfig.BaseT2Chance * ArtifactOfKnowledgePlugin.serverConfig.BaseVoidChance;
-                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.serverConfig.BaseT3Chance * ArtifactOfKnowledgePlugin.serverConfig.BaseVoidChance;
+                tierWeights[ItemTier.Tier1] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance;
+                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT2Chance;
+                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT3Chance;
+                tierWeights[ItemTier.VoidTier1] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
+                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT2Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
+                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT3Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
             }
 
-            tierWeights[ItemTier.Lunar] = ArtifactOfKnowledgePlugin.serverConfig.BaseLunarChance;
+            tierWeights[ItemTier.Lunar] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseLunarChance;
 
             ModifyItemTierWeights?.Invoke(this, tierWeights);
 
@@ -243,13 +279,13 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             foreach(var drop in Run.instance.availableEquipmentDropList) {
                 if(banished.Contains(drop)) continue;
                 if(drop == currentEquipment) continue;
-                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.serverConfig.BaseEquipChance);
+                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseEquipChance);
             }
 
             foreach(var drop in Run.instance.availableLunarEquipmentDropList) {
                 if(banished.Contains(drop)) continue;
                 if(drop == currentEquipment) continue;
-                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.serverConfig.BaseLunarEquipChance);
+                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseLunarEquipChance);
             }
 
             return retv;
@@ -266,12 +302,12 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             Dictionary<ItemTier[], int> maxOfAnyTier = new Dictionary<ItemTier[], int>();
             Dictionary<ItemTag[], (Color borderColor, int remaining)> guaranteedOfAnyTag = new Dictionary<ItemTag[], (Color borderColor, int remaining)>(); //todo: prevent selection of items which grant more of these once equal to total selections
 
-            maxOfAnyTier[new[] { ItemTier.Lunar }] = ArtifactOfKnowledgePlugin.serverConfig.BaseMaxLunar;
-            maxOfAnyTier[new[] { ItemTier.VoidTier1, ItemTier.VoidTier2, ItemTier.VoidTier3 }] = ArtifactOfKnowledgePlugin.serverConfig.BaseMaxVoid;
+            maxOfAnyTier[new[] { ItemTier.Lunar }] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseMaxLunar;
+            maxOfAnyTier[new[] { ItemTier.VoidTier1, ItemTier.VoidTier2, ItemTier.VoidTier3 }] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseMaxVoid;
 
-            int selectionSize = ArtifactOfKnowledgePlugin.serverConfig.SelectionSize;
+            int selectionSize = ArtifactOfKnowledgePlugin.itemSelectionConfig.SelectionSize;
 
-            if(ArtifactOfKnowledgePlugin.serverConfig.GuaranteeCategories) {
+            if(ArtifactOfKnowledgePlugin.itemSelectionConfig.GuaranteeCategories) {
                 guaranteedOfAnyTag[new[] { ItemTag.Damage }] = (new Color(1f, 0.2f, 0.2f), 1);
                 guaranteedOfAnyTag[new[] { ItemTag.Utility }] = (new Color(0.2f, 0.2f, 1f), 1);
                 guaranteedOfAnyTag[new[] { ItemTag.Healing }] = (new Color(0.2f, 1f, 0.2f), 1);
@@ -357,7 +393,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                     }
                 }
             }
-            for(int i = 0; i < ArtifactOfKnowledgePlugin.serverConfig.GearSelectionSize; i++) {
+            for(int i = 0; i < ArtifactOfKnowledgePlugin.itemSelectionConfig.GearSelectionSize; i++) {
                 if(newGearSuperSelection.Count == 0) {
                     currentSelection.Add((PickupIndex.none, new Color(0.5f, 0.5f, 0.5f)));
                 } else {
@@ -403,7 +439,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         [ClientRpc]
         void RpcLevelUpEvent() {
-            if(Util.HasEffectiveAuthority(gameObject) && targetMasterObject.TryGetComponent<CharacterMaster>(out var master) && master.hasBody) {
+            if(Util.HasEffectiveAuthority(gameObject) && currentHud && targetMasterObject.TryGetComponent<CharacterMaster>(out var master) && master.hasBody) {
                 Util.PlaySound("Play_UI_item_land_tier3", master.GetBody().gameObject);
             }
         }

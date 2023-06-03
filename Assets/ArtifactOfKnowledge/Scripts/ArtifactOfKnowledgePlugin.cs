@@ -47,6 +47,31 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             [AutoConfigRoOIntSlider("{0:N0}", 0, 10)]
             public int BanishCost { get; internal set; } = 2;
 
+            [AutoConfig("Number of rerolls granted at the start of a run.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
+            [AutoConfigRoOIntSlider("{0:N0}", 0, 50)]
+            public int StartingRerolls { get; internal set; } = 10;
+
+            [AutoConfig("Number of rerolls granted for every cleared teleporter.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
+            [AutoConfigRoOIntSlider("{0:N0}", 0, 10)]
+            public int RerollsPerStage { get; internal set; } = 3;
+        }
+
+        public class XpScalingConfig : AutoConfigContainer {
+            public enum XpGainMode { Vanilla, KillsExponential, TimeExponential, KillsLinear, TimeLinear }
+            [AutoConfig("Determines how upgrade experience is awarded, and how the StartingXp and XpScaling options apply.\r\n - Vanilla: use the vanilla level-up system.\r\n - KillsExponential: a level is granted after StartingXp kills, each subsequent level requires XpScaling times more kills.\r\n - TimeExponential: a level is granted after StartingXp seconds, each subsequent level takes XpScaling longer.\r\n - KillsLinear: a level is granted after StartingXp kills, each subsequent level takes +XpScaling kills.\r\n - TimeLinear: a level is granted after StartingXp seconds, each subsequent level takes +XpScaling seconds.", AutoConfigFlags.None)]
+            [AutoConfigRoOChoice()]
+            public XpGainMode XpMode { get; internal set; } = XpGainMode.Vanilla;
+
+            [AutoConfig("Experience required for the first upgrade level. Vanilla level system uses 20.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+            [AutoConfigRoOSlider("{0:N0}", 0f, 100f)]
+            public float StartingXp { get; internal set; } = 8f;
+
+            [AutoConfig("Experience scaling rate for upgrade levels. Vanilla level system uses 1.55.", AutoConfigFlags.PreventNetMismatch, 1f, float.MaxValue)]
+            [AutoConfigRoOSlider("{0:N0}", 1.01f, 10f)]
+            public float XpScaling { get; internal set; } = 1.4f;
+        }
+
+        public class ItemSelectionConfig : AutoConfigContainer {
             [AutoConfig("Weight for each offered item to be Common item. May be upgraded to Uncommon/Rare by relevant LevelInterval settings.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
             public float BaseT1Chance { get; internal set; } = 1f;
@@ -91,14 +116,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             [AutoConfigRoOIntSlider("{0:N0}", 0, 30)]
             public int RareLevelInterval { get; internal set; } = 15;
 
-            [AutoConfig("Experience required for the first upgrade level. Vanilla level system uses 20.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:N0}", 0f, 100f)]
-            public float StartingXp { get; internal set; } = 8f;
-
-            [AutoConfig("Experience scaling rate for upgrade levels. Vanilla level system uses 1.55.", AutoConfigFlags.PreventNetMismatch, 1f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:N0}", 1.01f, 10f)]
-            public float XpScaling { get; internal set; } = 1.4f;
-
             [AutoConfig("If true, one each of the offered items will always be Damage-, Utility-, and Healing-related.", AutoConfigFlags.PreventNetMismatch)]
             [AutoConfigRoOCheckbox()]
             public bool GuaranteeCategories { get; internal set; } = true;
@@ -110,18 +127,12 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             [AutoConfig("How many random gear swaps are offered at once by the upgrade menu.", AutoConfigFlags.PreventNetMismatch, 1, int.MaxValue)]
             [AutoConfigRoOIntSlider("{0:N0}", 1, 30)]
             public int GearSelectionSize { get; internal set; } = 2;
-
-            [AutoConfig("Number of rerolls granted at the start of a run.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-            [AutoConfigRoOIntSlider("{0:N0}", 0, 50)]
-            public int StartingRerolls { get; internal set; } = 10;
-
-            [AutoConfig("Number of rerolls granted for every cleared teleporter.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-            [AutoConfigRoOIntSlider("{0:N0}", 0, 10)]
-            public int RerollsPerStage { get; internal set; } = 3;
         }
 
         public static ServerConfig serverConfig = new ServerConfig();
         public static ClientConfig clientConfig = new ClientConfig();
+        public static XpScalingConfig xpScalingConfig = new XpScalingConfig();
+        public static ItemSelectionConfig itemSelectionConfig = new ItemSelectionConfig();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity Engine.")]
         private void Awake() {
@@ -137,7 +148,9 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
-            serverConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server");
+            serverConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Misc.");
+            xpScalingConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server XP Scaling");
+            itemSelectionConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Item Selection");
             clientConfig.BindAll(cfgFile, "Artifact of Knowledge", "Client");
 
             clientConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
