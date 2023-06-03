@@ -62,7 +62,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             [AutoConfigRoOChoice()]
             public XpGainMode XpMode { get; internal set; } = XpGainMode.Vanilla;
 
-            [AutoConfig("Experience required for the first upgrade level. Vanilla level system uses 20.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+            [AutoConfig("Experience, kills, seconds, etc. required for the first upgrade level. Vanilla level system uses 20 xp.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:N0}", 0f, 100f)]
             public float StartingXp { get; internal set; } = 8f;
 
