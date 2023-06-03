@@ -1,4 +1,5 @@
 ﻿using RoR2;
+using System;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -127,7 +128,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         private void TeamManager_GiveTeamExperience(On.RoR2.TeamManager.orig_GiveTeamExperience orig, TeamManager self, TeamIndex teamIndex, ulong experience) {
             orig(self, teamIndex, experience);
-            if(NetworkServer.active && IsActiveAndEnabled() && teamIndex == TeamIndex.Player && ArtifactOfKnowledgePlugin.xpScalingConfig.Source == XpSource.LevelXp) {
+            if(NetworkServer.active && IsActiveAndEnabled() && teamIndex == TeamIndex.Player && (ArtifactOfKnowledgePlugin.xpScalingConfig.Source == XpSource.LevelXp || !Enum.IsDefined(typeof(XpSource), ArtifactOfKnowledgePlugin.xpScalingConfig))) {
                 foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
                     kcm.ServerAddXp(experience);
                 }

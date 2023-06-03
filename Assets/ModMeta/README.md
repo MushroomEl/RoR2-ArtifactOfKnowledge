@@ -38,6 +38,7 @@ The 5 latest updates are listed below. For a full changelog, see: https://github
 - Split XpScaling config into LinearXpScaling and ExponentialXpScaling in order to present better RiskOfOptions range/display for each.
 - Changing a Server XP Scaling config mid-run now resets XP to 0 (level is kept) and recalculates XP-to-next-level for all players.
 - Changing a Server Item Selection config mid-run now forces a free reroll for all players.
+- XpScalingType and Source now have default behavior in case of invalid settings.
 
 **2.0.0**
 

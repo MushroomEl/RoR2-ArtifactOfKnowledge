@@ -134,11 +134,12 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public void ServerCalculateXpToNextLevel() {
             if(!targetMasterObject) return;
             switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScalingType) {
-                case ScalingType.Exponential:
-                    xpToNextLevel = ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.ExponentialXpScaling, level);
-                    break;
                 case ScalingType.Linear:
                     xpToNextLevel = ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp + level * ArtifactOfKnowledgePlugin.xpScalingConfig.LinearXpScaling;
+                    break;
+                case ScalingType.Exponential:
+                default:
+                    xpToNextLevel = ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.ExponentialXpScaling, level);
                     break;
             }
         }
