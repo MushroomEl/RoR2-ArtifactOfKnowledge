@@ -39,6 +39,8 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         [SyncVar]
         public float xpToNextLevel = 0;
 
+        public int level => spentUpgrades + unspentUpgrades;
+
         [SyncVar]
         internal GameObject targetMasterObject = null;
 
@@ -115,13 +117,13 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             if(!targetMasterObject) return;
             xp += amount;
             bool changedLevel = false;
-            while(xp >= xpToNextLevel && (unspentUpgrades + spentUpgrades) < SAFETY_LEVEL_CAP) {
+            while(xp >= xpToNextLevel && level < SAFETY_LEVEL_CAP) {
                 changedLevel = true;
                 unspentUpgrades++;
                 xp -= xpToNextLevel;
                 switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode) {
                     case XpGainMode.Vanilla:
-                        xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, unspentUpgrades + spentUpgrades);
+                        xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, level);
                         break;
                     case XpGainMode.KillsExponential:
                     case XpGainMode.TimeExponential:
@@ -132,7 +134,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                         xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
                         break;
                 }
-                ArtifactOfKnowledgePlugin._logger.LogInfo($"Level {unspentUpgrades + spentUpgrades} - Next level XP {xpToNextLevel}");
             }
             if(changedLevel)
                 RpcLevelUpEvent();
