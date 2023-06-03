@@ -139,7 +139,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 var xp = ArtifactOfKnowledgePlugin.xpScalingConfig.TeleporterDropXp * (self.scaleRewardsByPlayerCount ? Run.instance.participatingPlayerCount : 1) * (self.bonusRewardCount + 1);
                 if(xp > 0f)
                     foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
-                        kcm.ServerAddXp((ulong)(kcm.nextLevelXp * xp));
+                        kcm.ServerAddXp(kcm.xpToNextLevel * xp);
                     }
             } else orig(self);
         }
