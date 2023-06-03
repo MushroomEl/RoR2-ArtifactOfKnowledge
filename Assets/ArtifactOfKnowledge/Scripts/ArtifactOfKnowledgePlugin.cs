@@ -69,6 +69,14 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             [AutoConfig("Experience scaling rate for upgrade levels. Vanilla level system uses 1.55.", AutoConfigFlags.PreventNetMismatch, 1f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:N0}", 1.01f, 10f)]
             public float XpScaling { get; internal set; } = 1.4f;
+
+            [AutoConfig("If true, Teleporter item drops will be converted to upgrade experience (or nothing, if TeleporterDropXp is 0).", AutoConfigFlags.PreventNetMismatch)]
+            [AutoConfigRoOCheckbox()]
+            public bool ConvertTeleporterDrops { get; internal set; } = true;
+
+            [AutoConfig("Fraction of an upgrade level to grant per teleporter drop, if ConvertTeleporterDrops is on.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+            [AutoConfigRoOSlider("{0:N0}", 0f, 5f)]
+            public float TeleporterDropXp { get; internal set; } = 0.5f;
         }
 
         public class ItemSelectionConfig : AutoConfigContainer {

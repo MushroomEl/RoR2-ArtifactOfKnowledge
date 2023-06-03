@@ -40,6 +40,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             On.RoR2.UI.HUD.Awake += HUD_Awake;
             On.RoR2.TeamManager.GiveTeamExperience += TeamManager_GiveTeamExperience;
             RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
+            On.RoR2.BossGroup.DropRewards += BossGroup_DropRewards;
         }
 
         public override void Uninstall() {
@@ -54,6 +55,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             On.RoR2.UI.HUD.Awake -= HUD_Awake;
             On.RoR2.TeamManager.GiveTeamExperience -= TeamManager_GiveTeamExperience;
             RoR2.GlobalEventManager.onCharacterDeathGlobal -= GlobalEventManager_onCharacterDeathGlobal;
+            On.RoR2.BossGroup.DropRewards -= BossGroup_DropRewards;
         }
 
 
@@ -130,6 +132,16 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                     kcm.ServerAddXp(experience);
                 }
             }
+        }
+
+        private void BossGroup_DropRewards(On.RoR2.BossGroup.orig_DropRewards orig, BossGroup self) {
+            if(IsActiveAndEnabled() && TeleporterInteraction.instance && TeleporterInteraction.instance.bossGroup == self && ArtifactOfKnowledgePlugin.xpScalingConfig.ConvertTeleporterDrops) {
+                var xp = ArtifactOfKnowledgePlugin.xpScalingConfig.TeleporterDropXp * (self.scaleRewardsByPlayerCount ? Run.instance.participatingPlayerCount : 1) * (self.bonusRewardCount + 1);
+                if(xp > 0f)
+                    foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
+                        kcm.ServerAddXp((ulong)(kcm.nextLevelXp * xp));
+                    }
+            } else orig(self);
         }
     }
 }
