@@ -1,4 +1,4 @@
-# Artifact of Knowledge (PRERELEASE)
+# Artifact of Knowledge
 
 ## SUPPORT DISCLAIMER
 
@@ -32,7 +32,7 @@ The 5 latest updates are listed below. For a full changelog, see: https://github
 
 (🌧︎: Involves an accepted GitHub Pull Request or other significant assistance from the community. Thanks for your help!)
 
-**1.0.0** (PRERELEASE)
+**1.0.0**
 
 - Initial version.
 - Adds the Artifact of Knowledge, which presents a selection of 5 items and 2 gear for every level of a secondary level-up system; and prevents any Sacrifice-banned interactables (mostly chests) from spawning.
