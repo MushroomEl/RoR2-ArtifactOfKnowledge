@@ -16,7 +16,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
     [BepInDependency(TILER2Plugin.ModGuid, TILER2Plugin.ModVer)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class ArtifactOfKnowledgePlugin : BaseUnityPlugin {
-        public const string ModVer = "1.0.1";
+        public const string ModVer = "2.0.0";
         public const string ModName = "ArtifactOfKnowledge";
         public const string ModGuid = "com.ThinkInvisible.ArtifactOfKnowledge";
 
