@@ -94,7 +94,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 xpStopwatch -= Time.fixedDeltaTime;
                 if(xpStopwatch <= 0f) {
                     xpStopwatch += 1f;
-                    ServerAddXp(1u);
+                    ServerAddXp(1f);
                 }
             }
         }
