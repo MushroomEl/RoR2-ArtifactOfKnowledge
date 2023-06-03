@@ -270,9 +270,11 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
             int selectionSize = ArtifactOfKnowledgePlugin.serverConfig.SelectionSize;
 
-            guaranteedOfAnyTag[new[] { ItemTag.Damage }] = (new Color(1f, 0.2f, 0.2f), 1);
-            guaranteedOfAnyTag[new[] { ItemTag.Utility }] = (new Color(0.2f, 0.2f, 1f), 1);
-            guaranteedOfAnyTag[new[] { ItemTag.Healing }] = (new Color(0.2f, 1f, 0.2f), 1);
+            if(ArtifactOfKnowledgePlugin.serverConfig.GuaranteeCategories) {
+                guaranteedOfAnyTag[new[] { ItemTag.Damage }] = (new Color(1f, 0.2f, 0.2f), 1);
+                guaranteedOfAnyTag[new[] { ItemTag.Utility }] = (new Color(0.2f, 0.2f, 1f), 1);
+                guaranteedOfAnyTag[new[] { ItemTag.Healing }] = (new Color(0.2f, 1f, 0.2f), 1);
+            }
 
             ModifyMaxOfAnyTier?.Invoke(this, maxOfAnyTier);
             ModifyGuaranteedOfAnyTag?.Invoke(this, guaranteedOfAnyTag);
