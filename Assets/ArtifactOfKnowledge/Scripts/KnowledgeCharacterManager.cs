@@ -35,11 +35,9 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         [SyncVar]
         public int rerolls = 0;
         [SyncVar]
-        public ulong xp = 0;
+        public float xp = 0;
         [SyncVar]
-        public ulong nextLevelXp = 0;
-        [SyncVar]
-        public ulong thisLevelXp = 0;
+        public float xpToNextLevel = 0;
 
         [SyncVar]
         internal GameObject targetMasterObject = null;
@@ -70,7 +68,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         #region Unity Methods
         void Awake() {
             _instances.Add(this);
-            nextLevelXp = (ulong)ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp;
+            xpToNextLevel = (ulong)ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp;
         }
 
         void OnDestroy() {
@@ -113,25 +111,25 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         }
 
         [Server]
-        public void ServerAddXp(ulong amount) {
+        public void ServerAddXp(float amount) {
             if(!targetMasterObject) return;
             xp += amount;
             bool changedLevel = false;
-            while(xp > nextLevelXp && (unspentUpgrades + spentUpgrades) < SAFETY_LEVEL_CAP) {
+            while(xp > xpToNextLevel && (unspentUpgrades + spentUpgrades) < SAFETY_LEVEL_CAP) {
                 changedLevel = true;
                 unspentUpgrades++;
-                thisLevelXp = nextLevelXp;
+                xp -= xpToNextLevel;
                 switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode) {
                     case XpGainMode.Vanilla:
-                        nextLevelXp = (ulong)TeamManager.InitialCalcExperience(unspentUpgrades + spentUpgrades + 2, ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp, ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling);
+                        xpToNextLevel += xpToNextLevel * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, unspentUpgrades + spentUpgrades);
                         break;
                     case XpGainMode.KillsExponential:
                     case XpGainMode.TimeExponential:
-                        nextLevelXp = thisLevelXp + (ulong)(ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, unspentUpgrades + spentUpgrades));
+                        xpToNextLevel *= ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
                         break;
                     case XpGainMode.KillsLinear:
                     case XpGainMode.TimeLinear:
-                        nextLevelXp = thisLevelXp + (ulong)ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp + (ulong)((ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling) * (unspentUpgrades + spentUpgrades));
+                        xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
                         break;
                 }
                 
@@ -437,7 +435,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 if(!currentXpBar) {
                     currentXpBar = currentHud.transform.GetComponentInChildren<KnowledgeXpBar>();
                 }
-                if(currentXpBar) currentXpBar.SetFill(Mathf.InverseLerp((float)thisLevelXp, (float)nextLevelXp, (float)xp), unspentUpgrades, spentUpgrades);
+                if(currentXpBar) currentXpBar.SetFill(Mathf.InverseLerp(0f, xpToNextLevel, xp), unspentUpgrades, spentUpgrades);
             }
         }
 
