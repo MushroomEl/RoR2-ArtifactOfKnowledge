@@ -57,10 +57,15 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         }
 
         public class XpScalingConfig : AutoConfigContainer {
-            public enum XpGainMode { Vanilla, KillsExponential, TimeExponential, KillsLinear, TimeLinear }
-            [AutoConfig("Determines how upgrade experience is awarded, and how the StartingXp and XpScaling options apply.\r\n - Vanilla: use the vanilla level-up system.\r\n - KillsExponential: a level is granted after StartingXp kills, each subsequent level requires XpScaling times more kills.\r\n - TimeExponential: a level is granted after StartingXp seconds, each subsequent level takes XpScaling longer.\r\n - KillsLinear: a level is granted after StartingXp kills, each subsequent level takes +XpScaling kills.\r\n - TimeLinear: a level is granted after StartingXp seconds, each subsequent level takes +XpScaling seconds.", AutoConfigFlags.None)]
+            public enum XpSource { LevelXp, Kills, Time }
+            public enum ScalingType { Vanilla, Exponential, Linear }
+            [AutoConfig("Determines how upgrade experience is awarded.\r\n - LevelXp: the vanilla experience system also grants upgrade xp. Note that level xp gain scales with time.\r\n - Kills: 1 kill = 1 upgrade xp.\r\n - Time: 1 second = 1 upgrade xp.", AutoConfigFlags.None)]
             [AutoConfigRoOChoice()]
-            public XpGainMode XpMode { get; internal set; } = XpGainMode.Vanilla;
+            public XpSource Source { get; internal set; } = XpSource.LevelXp;
+
+            [AutoConfig("Determines how the StartingXp and XpScaling options apply.\r\n - Vanilla: use vanilla level-up scaling, each level takes +(StartingXp * XpScaling^Levels) more than the last.\r\n - Exponential: each level takes *XpScaling more than the last. Shallower scaling for only the first few levels compared to Vanilla.\r\n - Linear: each level takes +XpScaling more than the last. Much shallower scaling compared to Vanilla and Exponential, more suitable for Time/Kills sources.", AutoConfigFlags.None)]
+            [AutoConfigRoOChoice()]
+            public ScalingType XpScalingType { get; internal set; } = ScalingType.Vanilla;
 
             [AutoConfig("Experience, kills, seconds, etc. required for the first upgrade level. Vanilla level system uses 20 xp.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:N0}", 0f, 100f)]

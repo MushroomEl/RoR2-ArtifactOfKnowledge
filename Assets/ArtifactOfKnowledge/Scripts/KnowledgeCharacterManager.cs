@@ -5,7 +5,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using XpGainMode = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.XpScalingConfig.XpGainMode;
+using XpSource = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.XpScalingConfig.XpSource;
+using ScalingType = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.XpScalingConfig.ScalingType;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     public class KnowledgeCharacterManagerModule : TILER2.T2Module<KnowledgeCharacterManagerModule> {
@@ -89,7 +90,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         }
 
         void FixedUpdate() {
-            if(NetworkServer.active && (ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.TimeExponential || ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode == XpGainMode.TimeLinear)) {
+            if(NetworkServer.active && ArtifactOfKnowledgePlugin.xpScalingConfig.Source == XpSource.Time) {
                 xpStopwatch -= Time.fixedDeltaTime;
                 if(xpStopwatch <= 0f) {
                     xpStopwatch += 1f;
@@ -121,16 +122,14 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 changedLevel = true;
                 unspentUpgrades++;
                 xp -= xpToNextLevel;
-                switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode) {
-                    case XpGainMode.Vanilla:
+                switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScalingType) {
+                    case ScalingType.Vanilla:
                         xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, level);
                         break;
-                    case XpGainMode.KillsExponential:
-                    case XpGainMode.TimeExponential:
+                    case ScalingType.Exponential:
                         xpToNextLevel *= ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
                         break;
-                    case XpGainMode.KillsLinear:
-                    case XpGainMode.TimeLinear:
+                    case ScalingType.Linear:
                         xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
                         break;
                 }
