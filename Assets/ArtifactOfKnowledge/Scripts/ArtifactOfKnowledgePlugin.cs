@@ -185,8 +185,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             xpScalingConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
                 if(NetworkServer.active && Run.instance && KnowledgeArtifact.instance.IsActiveAndEnabled()) {
                     foreach(var kcm in KnowledgeCharacterManager.readOnlyInstances) {
-                        kcm.xp = 0f;
-                        kcm.ServerCalculateXpToNextLevel();
+                        kcm.ServerCalculateXpToNextLevel(true);
                     }
                 }
             };
