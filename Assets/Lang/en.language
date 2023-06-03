@@ -13,17 +13,6 @@
 		"AKNOW_VOID_DESC_3": "How did this happen, we're smarter than this?",
 		"AKNOW_VOID_DESC_4": "Maybe take it a little easier on the Banish button.",
 		"AKNOW_VOID_DESC_5": "You're all out of cards!",
-		"AKNOW_VOID_DESC_6": "Nothing to see here.",
-
-
-		"ARTIFACTOFKNOWLEDGE_TIDALPULL_NAME": "Tidal Pull",
-		"ARTIFACTOFKNOWLEDGE_TIDALPULL_PICKUP": "Increase chance and limit of Lunar item upgrades.",
-		"ARTIFACTOFKNOWLEDGE_TIDALPULL_DESC": "The Upgrade menu will offer up to 1 more Lunar item. Lunar items appear 25% more often, relative to base chance. Gain 1 Reroll.",
-		"ARTIFACTOFKNOWLEDGE_TIDALPULL_LORE": "",
-
-		"ARTIFACTOFKNOWLEDGE_UNDERTOW_NAME": "Undertow",
-		"ARTIFACTOFKNOWLEDGE_UNDERTOW_PICKUP": "Increase chance and limit of Void item upgrades.",
-		"ARTIFACTOFKNOWLEDGE_UNDERTOW_DESC": "The Upgrade menu will offer up to 1 more Void item. Void items appear 25% more often, relative to base chance. Gain 1 Reroll.",
-		"ARTIFACTOFKNOWLEDGE_UNDERTOW_LORE": ""
+		"AKNOW_VOID_DESC_6": "Nothing to see here."
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using BepInEx;
-using R2API;
 using R2API.Utils;
 using UnityEngine;
 using BepInEx.Configuration;
@@ -124,9 +123,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public static ServerConfig serverConfig = new ServerConfig();
         public static ClientConfig clientConfig = new ClientConfig();
 
-        public static ItemTierDef MetaItemTier { get; private set; }
-        public static ItemTierDef SuperItemTier { get; private set; }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity Engine.")]
         private void Awake() {
             _logger = Logger;
@@ -138,21 +134,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             } catch(Exception ex) {
                 _logger.LogError($"Shader unstub failed: {ex} {ex.Message}");
             }
-
-            MetaItemTier = resources.LoadAsset<ItemTierDef>("Assets/ArtifactOfKnowledge/KnowledgeMetaItemTier.asset");
-            /*MetaItemTier.colorIndex = R2API.ColorsAPI.RegisterColor(new(0.1f, 0.1f, 1f));
-            MetaItemTier.darkColorIndex = R2API.ColorsAPI.RegisterColor(new(0.1f, 0.1f, 0.5f));*/ //TODO: throwing errors, unusable
-            MetaItemTier.dropletDisplayPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/LunarOrb.prefab").WaitForCompletion(); //shouldn't ever have a droplet so we don't need a custom one, this is close enough
-            MetaItemTier.highlightPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/HighlightLunarItem.prefab").WaitForCompletion();
-
-            SuperItemTier = resources.LoadAsset<ItemTierDef>("Assets/ArtifactOfKnowledge/KnowledgeSuperItemTier.asset");
-            /*SuperItemTier.colorIndex = R2API.ColorsAPI.RegisterColor(new(0.1f, 0.1f, 0.1f));
-            SuperItemTier.darkColorIndex = R2API.ColorsAPI.RegisterColor(new(0.02f, 0.02f, 0.02f));*/
-            SuperItemTier.dropletDisplayPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Tier1Orb.prefab").WaitForCompletion(); //shouldn't ever have a droplet so we don't need a custom one, this is close enough
-            SuperItemTier.highlightPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/HighlightTier1Item.prefab").WaitForCompletion();
-
-            ContentAddition.AddItemTierDef(MetaItemTier);
-            ContentAddition.AddItemTierDef(SuperItemTier);
 
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
