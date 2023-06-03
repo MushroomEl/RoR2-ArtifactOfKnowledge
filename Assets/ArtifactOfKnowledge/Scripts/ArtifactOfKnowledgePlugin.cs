@@ -59,22 +59,26 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         public class XpScalingConfig : AutoConfigContainer {
             public enum XpSource { LevelXp, Kills, Time }
-            public enum ScalingType { Vanilla, Exponential, Linear }
+            public enum ScalingType { Exponential, Linear }
             [AutoConfig("Determines how upgrade experience is awarded.\r\n - LevelXp: the vanilla experience system also grants upgrade xp. Note that level xp gain scales with time.\r\n - Kills: 1 kill = 1 upgrade xp.\r\n - Time: 1 second = 1 upgrade xp.", AutoConfigFlags.None)]
             [AutoConfigRoOChoice()]
             public XpSource Source { get; internal set; } = XpSource.LevelXp;
 
             [AutoConfig("Determines how the StartingXp and XpScaling options apply.\r\n - Exponential: each level takes *XpScaling more than the last. Matches scaling of the vanilla experience system.\r\n - Linear: each level takes +XpScaling more than the last. Much shallower scaling compared to Exponential, more suitable for Time/Kills sources.", AutoConfigFlags.None)]
             [AutoConfigRoOChoice()]
-            public ScalingType XpScalingType { get; internal set; } = ScalingType.Vanilla;
+            public ScalingType XpScalingType { get; internal set; } = ScalingType.Exponential;
 
             [AutoConfig("Experience, kills, seconds, etc. required for the first upgrade level. Vanilla level system uses 20 xp.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:N0}", 0f, 100f)]
             public float StartingXp { get; internal set; } = 8f;
 
-            [AutoConfig("Experience scaling rate for upgrade levels. Vanilla level system uses 1.55.", AutoConfigFlags.PreventNetMismatch, 1f, float.MaxValue)]
+            [AutoConfig("Experience scaling rate for upgrade levels, if XpScalingType is Exponential. Vanilla level system uses 1.55.", AutoConfigFlags.PreventNetMismatch, 1f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:P0}", 1.01f, 3f)]
-            public float XpScaling { get; internal set; } = 1.4f;
+            public float ExponentialXpScaling { get; internal set; } = 1.4f;
+
+            [AutoConfig("Experience scaling rate for upgrade levels, if XpScalingType is Linear.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+            [AutoConfigRoOSlider("{0:N1}", 0f, 50f)]
+            public float LinearXpScaling { get; internal set; } = 5f;
 
             [AutoConfig("If true, Teleporter item drops will be converted to upgrade experience (or nothing, if TeleporterDropXp is 0).", AutoConfigFlags.PreventNetMismatch)]
             [AutoConfigRoOCheckbox()]
