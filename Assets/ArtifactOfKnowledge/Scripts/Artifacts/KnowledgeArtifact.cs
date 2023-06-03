@@ -128,7 +128,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         private void TeamManager_GiveTeamExperience(On.RoR2.TeamManager.orig_GiveTeamExperience orig, TeamManager self, TeamIndex teamIndex, ulong experience) {
             orig(self, teamIndex, experience);
-            if(NetworkServer.active && IsActiveAndEnabled() && teamIndex == TeamIndex.Player && (ArtifactOfKnowledgePlugin.xpScalingConfig.Source == XpSource.LevelXp || !Enum.IsDefined(typeof(XpSource), ArtifactOfKnowledgePlugin.xpScalingConfig))) {
+            if(NetworkServer.active && IsActiveAndEnabled() && teamIndex == TeamIndex.Player && (ArtifactOfKnowledgePlugin.xpScalingConfig.Source != XpSource.Kills && ArtifactOfKnowledgePlugin.xpScalingConfig.Source != XpSource.Time)) {
                 foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
                     kcm.ServerAddXp(experience);
                 }
