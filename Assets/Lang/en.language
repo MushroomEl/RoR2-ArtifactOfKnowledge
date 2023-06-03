@@ -1,0 +1,29 @@
+﻿{
+	"strings": {
+		"ARTIFACTOFKNOWLEDGE_KNOWLEDGEARTIFACT_NAME": "Artifact of Knowledge",
+		"ARTIFACTOFKNOWLEDGE_KNOWLEDGEARTIFACT_DESC": "Add a second level-up system which grants items, replacing most Chests. Includes mode-specific items such as Rerolls.",
+
+		"AKNOW_PANEL_TEXT": "<b>Knowledge is Power</b>\r\n<i>Pick a new item, or a gear swap.</i>\r\n- {0} upgrade points // {1} rerolls -",
+		"AKNOW_PANEL_REROLL": "Reroll",
+		"AKNOW_UNSPENT": "{0} Unspent Upgrades <style=cStack>Press [{1}]</style>",
+		"AKNOW_VOID_NAME": "Nothing",
+		"AKNOW_VOID_DESC_0": "You've exhausted your options. Nothing is left here.",
+		"AKNOW_VOID_DESC_1": "You stare into the Void...",
+		"AKNOW_VOID_DESC_2": "You get <i>nothing</i>! You <i>lose</i>! Good <i>day</i>, sir!",
+		"AKNOW_VOID_DESC_3": "How did this happen, we're smarter than this?",
+		"AKNOW_VOID_DESC_4": "Maybe take it a little easier on the Banish button.",
+		"AKNOW_VOID_DESC_5": "You're all out of cards!",
+		"AKNOW_VOID_DESC_6": "Nothing to see here.",
+
+
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_NAME": "Tidal Pull",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_PICKUP": "Increase chance and limit of Lunar item upgrades.",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_DESC": "The Upgrade menu will offer up to 1 more Lunar item. Lunar items appear 25% more often, relative to base chance. Gain 1 Reroll.",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_LORE": "",
+
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_NAME": "Undertow",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_PICKUP": "Increase chance and limit of Void item upgrades.",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_DESC": "The Upgrade menu will offer up to 1 more Void item. Void items appear 25% more often, relative to base chance. Gain 1 Reroll.",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_LORE": ""
+	}
+}

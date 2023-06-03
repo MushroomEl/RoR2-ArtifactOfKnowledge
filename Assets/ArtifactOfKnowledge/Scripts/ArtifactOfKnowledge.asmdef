@@ -1,0 +1,32 @@
+{
+    "name": "ArtifactOfKnowledge",
+    "references": [
+        "GUID:a44f47cf3ada4435dbc516bad0bc86fe"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "RoR2.dll",
+        "TILER2.dll",
+        "LegacyResourcesAPI.dll",
+        "MMHOOK_RoR2.dll",
+        "BepInEx.dll",
+        "Unity.Addressables.dll",
+        "Unity.ResourceManager.dll",
+        "Unity.TextMeshPro.dll",
+        "R2API.Core.dll",
+        "R2API.Networking.dll",
+        "R2API.Colors.dll",
+        "R2API.Prefab.dll",
+        "R2API.RecalculateStats.dll",
+        "R2API.ContentManagement.dll",
+        "UnityEngine.UI.dll",
+        "HGCSharpUtils.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
