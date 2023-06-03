@@ -32,6 +32,11 @@ The 5 latest updates are listed below. For a full changelog, see: https://github
 
 (🌧︎: Involves an accepted GitHub Pull Request or other significant assistance from the community. Thanks for your help!)
 
+**1.0.1** *The Pobody's Nerfect Update*
+
+- Fixed hidden and WorldUnique (e.g. scrap) items being inadvertently offered by Artifact of Knowledge.
+- Added a custom package icon, which was previously an accidental copy from Tinker's Satchel.
+
 **1.0.0**
 
 - Initial version.
