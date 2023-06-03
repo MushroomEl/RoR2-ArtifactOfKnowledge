@@ -120,7 +120,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj) {
             if(NetworkServer.active && IsActiveAndEnabled() && obj.attackerTeamIndex == TeamIndex.Player && ArtifactOfKnowledgePlugin.xpScalingConfig.Source == XpSource.Kills) {
                 foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
-                    kcm.ServerAddXp(1u);
+                    kcm.ServerAddXp(1f);
                 }
             }
         }
