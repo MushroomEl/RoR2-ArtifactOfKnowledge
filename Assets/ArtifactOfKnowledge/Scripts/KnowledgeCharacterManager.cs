@@ -37,7 +37,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         [SyncVar]
         public ulong xp = 0;
         [SyncVar]
-        public ulong nextLevelXp = (ulong)ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp;
+        public ulong nextLevelXp = 0;
         [SyncVar]
         public ulong thisLevelXp = 0;
 
@@ -70,6 +70,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         #region Unity Methods
         void Awake() {
             _instances.Add(this);
+            nextLevelXp = (ulong)ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp;
         }
 
         void OnDestroy() {
