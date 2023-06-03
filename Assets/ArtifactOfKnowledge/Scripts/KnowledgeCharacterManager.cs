@@ -115,7 +115,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             if(!targetMasterObject) return;
             xp += amount;
             bool changedLevel = false;
-            while(xp > xpToNextLevel && (unspentUpgrades + spentUpgrades) < SAFETY_LEVEL_CAP) {
+            while(xp >= xpToNextLevel && (unspentUpgrades + spentUpgrades) < SAFETY_LEVEL_CAP) {
                 changedLevel = true;
                 unspentUpgrades++;
                 xp -= xpToNextLevel;
