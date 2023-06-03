@@ -63,7 +63,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         private void Run_OnServerCharacterBodySpawned(On.RoR2.Run.orig_OnServerCharacterBodySpawned orig, Run self, CharacterBody characterBody) {
             orig(self, characterBody);
-            if(!IsActiveAndEnabled() || !NetworkServer.active || !characterBody || !characterBody.master || characterBody.teamComponent.teamIndex != TeamIndex.Player) return;
+            if(!IsActiveAndEnabled() || !NetworkServer.active || !characterBody || !characterBody.master || characterBody.teamComponent.teamIndex != TeamIndex.Player || !characterBody.isPlayerControlled) return;
             var master = characterBody.master;
             if(KnowledgeCharacterManager.readOnlyInstancesByTarget.ContainsKey(master.gameObject)) return;
             var kcm = GameObject.Instantiate(KnowledgeCharacterManagerModule.instance.managerPrefab);
