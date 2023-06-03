@@ -127,13 +127,11 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                         break;
                     case XpGainMode.KillsExponential:
                     case XpGainMode.TimeExponential:
-                        nextLevelXp = (ulong)(ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, unspentUpgrades + spentUpgrades));
+                        nextLevelXp = thisLevelXp + (ulong)(ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, unspentUpgrades + spentUpgrades));
                         break;
                     case XpGainMode.KillsLinear:
                     case XpGainMode.TimeLinear:
-                        nextLevelXp = (ulong)(ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp
-                            * (1f + (ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling
-                                    * (unspentUpgrades + spentUpgrades))));
+                        nextLevelXp = thisLevelXp + (ulong)(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling);
                         break;
                 }
                 
