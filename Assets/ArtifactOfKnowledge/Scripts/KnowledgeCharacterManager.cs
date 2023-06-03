@@ -121,7 +121,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 xp -= xpToNextLevel;
                 switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpMode) {
                     case XpGainMode.Vanilla:
-                        xpToNextLevel += xpToNextLevel * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, unspentUpgrades + spentUpgrades);
+                        xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling, unspentUpgrades + spentUpgrades);
                         break;
                     case XpGainMode.KillsExponential:
                     case XpGainMode.TimeExponential:
@@ -132,7 +132,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                         xpToNextLevel += ArtifactOfKnowledgePlugin.xpScalingConfig.XpScaling;
                         break;
                 }
-                
+                ArtifactOfKnowledgePlugin._logger.LogInfo($"Level {unspentUpgrades + spentUpgrades} - Next level XP {xpToNextLevel}");
             }
             if(changedLevel)
                 RpcLevelUpEvent();
