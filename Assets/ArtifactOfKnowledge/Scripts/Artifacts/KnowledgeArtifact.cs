@@ -136,7 +136,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         private void BossGroup_DropRewards(On.RoR2.BossGroup.orig_DropRewards orig, BossGroup self) {
             if(IsActiveAndEnabled() && TeleporterInteraction.instance && TeleporterInteraction.instance.bossGroup == self && ArtifactOfKnowledgePlugin.xpScalingConfig.ConvertTeleporterDrops) {
-                var xp = ArtifactOfKnowledgePlugin.xpScalingConfig.TeleporterDropXp * (self.scaleRewardsByPlayerCount ? Run.instance.participatingPlayerCount : 1) * (self.bonusRewardCount + 1);
+                var xp = ArtifactOfKnowledgePlugin.xpScalingConfig.TeleporterDropXp * (self.bonusRewardCount + 1) / (self.scaleRewardsByPlayerCount ? 1f : Run.instance.participatingPlayerCount);
                 if(xp > 0f)
                     foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
                         kcm.ServerAddXp(kcm.xpToNextLevel * xp);
