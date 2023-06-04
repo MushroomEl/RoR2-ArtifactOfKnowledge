@@ -78,7 +78,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             if(NetworkClient.active && Util.HasEffectiveAuthority(gameObject)) {
                 if(!currentHud) ClientDiscoverHud();
                 ClientUpdateXpBar();
-                if(ArtifactOfKnowledgePlugin.clientConfig.KeybindShowMenu.IsPressed())
+                if(ArtifactOfKnowledgePlugin.ClientConfig.KeybindShowMenu.IsPressed())
                     ClientShowUpgradePanel();
             }
         }
@@ -123,11 +123,11 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         [Command]
         public void CmdBanish(int index) {
             if(!NetworkServer.active || !targetMasterObject) return;
-            if(rerolls < ArtifactOfKnowledgePlugin.serverConfig.BanishCost || banished.Contains(currentSelection[index].index)) {
+            if(rerolls < ArtifactOfKnowledgePlugin.ServerConfig.BanishCost || banished.Contains(currentSelection[index].index)) {
                 RpcDisplayError(UpgradeActionCode.Banish);
                 return;
             }
-            rerolls -= ArtifactOfKnowledgePlugin.serverConfig.BanishCost;
+            rerolls -= ArtifactOfKnowledgePlugin.ServerConfig.BanishCost;
             banished.Add(currentSelection[index].index);
 
             ServerGenerateSelection();
@@ -179,33 +179,33 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
             Dictionary<ItemTier, float> tierWeights = new Dictionary<ItemTier, float>();
 
-            bool upgradeUncommon = (spentUpgrades % ArtifactOfKnowledgePlugin.itemSelectionConfig.UncommonLevelInterval) == (ArtifactOfKnowledgePlugin.itemSelectionConfig.UncommonLevelInterval - 1);
-            bool upgradeRare = (spentUpgrades % ArtifactOfKnowledgePlugin.itemSelectionConfig.RareLevelInterval) == (ArtifactOfKnowledgePlugin.itemSelectionConfig.RareLevelInterval - 1);
+            bool upgradeUncommon = (spentUpgrades % ArtifactOfKnowledgePlugin.ItemSelectionConfig.UncommonLevelInterval) == (ArtifactOfKnowledgePlugin.ItemSelectionConfig.UncommonLevelInterval - 1);
+            bool upgradeRare = (spentUpgrades % ArtifactOfKnowledgePlugin.ItemSelectionConfig.RareLevelInterval) == (ArtifactOfKnowledgePlugin.ItemSelectionConfig.RareLevelInterval - 1);
 
             if(upgradeRare) { //TODO: migrate this to a standalone module using ModifyItemTierWeights
                 tierWeights[ItemTier.Tier1] = 0f;
                 tierWeights[ItemTier.Tier2] = 0f;
-                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance;
+                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance;
                 tierWeights[ItemTier.VoidTier1] = 0f;
                 tierWeights[ItemTier.VoidTier2] = 0f;
-                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
+                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
             } else if(upgradeUncommon) {
                 tierWeights[ItemTier.Tier1] = 0f;
-                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance;
+                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance;
                 tierWeights[ItemTier.Tier3] = 0f;
                 tierWeights[ItemTier.VoidTier1] = 0f;
-                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
+                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
                 tierWeights[ItemTier.VoidTier3] = 0f;
             } else {
-                tierWeights[ItemTier.Tier1] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance;
-                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT2Chance;
-                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT3Chance;
-                tierWeights[ItemTier.VoidTier1] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
-                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT2Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
-                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseT3Chance * ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseVoidChance;
+                tierWeights[ItemTier.Tier1] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance;
+                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT2Chance;
+                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT3Chance;
+                tierWeights[ItemTier.VoidTier1] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
+                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT2Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
+                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT3Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
             }
 
-            tierWeights[ItemTier.Lunar] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseLunarChance;
+            tierWeights[ItemTier.Lunar] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseLunarChance;
 
             ModifyItemTierWeights?.Invoke(this, tierWeights);
 
@@ -229,13 +229,13 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             foreach(var drop in Run.instance.availableEquipmentDropList) {
                 if(banished.Contains(drop)) continue;
                 if(drop == currentEquipment) continue;
-                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseEquipChance);
+                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseEquipChance);
             }
 
             foreach(var drop in Run.instance.availableLunarEquipmentDropList) {
                 if(banished.Contains(drop)) continue;
                 if(drop == currentEquipment) continue;
-                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseLunarEquipChance);
+                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseLunarEquipChance);
             }
 
             return retv;
@@ -252,12 +252,12 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             Dictionary<ItemTier[], int> maxOfAnyTier = new Dictionary<ItemTier[], int>();
             Dictionary<ItemTag[], (Color borderColor, int remaining)> guaranteedOfAnyTag = new Dictionary<ItemTag[], (Color borderColor, int remaining)>(); //todo: prevent selection of items which grant more of these once equal to total selections
 
-            maxOfAnyTier[new[] { ItemTier.Lunar }] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseMaxLunar;
-            maxOfAnyTier[new[] { ItemTier.VoidTier1, ItemTier.VoidTier2, ItemTier.VoidTier3 }] = ArtifactOfKnowledgePlugin.itemSelectionConfig.BaseMaxVoid;
+            maxOfAnyTier[new[] { ItemTier.Lunar }] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseMaxLunar;
+            maxOfAnyTier[new[] { ItemTier.VoidTier1, ItemTier.VoidTier2, ItemTier.VoidTier3 }] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseMaxVoid;
 
-            int selectionSize = ArtifactOfKnowledgePlugin.itemSelectionConfig.SelectionSize;
+            int selectionSize = ArtifactOfKnowledgePlugin.ItemSelectionConfig.SelectionSize;
 
-            if(ArtifactOfKnowledgePlugin.itemSelectionConfig.GuaranteeCategories) {
+            if(ArtifactOfKnowledgePlugin.ItemSelectionConfig.GuaranteeCategories) {
                 guaranteedOfAnyTag[new[] { ItemTag.Damage }] = (new Color(1f, 0.2f, 0.2f), 1);
                 guaranteedOfAnyTag[new[] { ItemTag.Utility }] = (new Color(0.2f, 0.2f, 1f), 1);
                 guaranteedOfAnyTag[new[] { ItemTag.Healing }] = (new Color(0.2f, 1f, 0.2f), 1);
@@ -343,7 +343,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                     }
                 }
             }
-            for(int i = 0; i < ArtifactOfKnowledgePlugin.itemSelectionConfig.GearSelectionSize; i++) {
+            for(int i = 0; i < ArtifactOfKnowledgePlugin.ItemSelectionConfig.GearSelectionSize; i++) {
                 if(newGearSuperSelection.Count == 0) {
                     currentSelection.Add((PickupIndex.none, new Color(0.5f, 0.5f, 0.5f)));
                 } else {
@@ -404,7 +404,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public void ClientUpdateXpBar() {
             if(!Util.HasEffectiveAuthority(gameObject)) return;
             if(!currentHud) return;
-            if(ArtifactOfKnowledgePlugin.clientConfig.XpBarLocation != ArtifactOfKnowledgePlugin.ClientConfig.UICluster.Nowhere) {
+            if(ArtifactOfKnowledgePlugin.ClientConfig.XpBarLocation != ArtifactOfKnowledgePlugin.ClientConfigContainer.UICluster.Nowhere) {
                 if(!currentXpBar) {
                     currentXpBar = currentHud.transform.GetComponentInChildren<KnowledgeXpBar>();
                 }

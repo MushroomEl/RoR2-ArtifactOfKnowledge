@@ -75,7 +75,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 NetworkServer.SpawnWithClientAuthority(kcm, cao);
             }
             var kcmCpt = kcm.GetComponent<KnowledgeCharacterManager>();
-            kcmCpt.ServerGrantRerolls(ArtifactOfKnowledgePlugin.serverConfig.StartingRerolls);
+            kcmCpt.ServerGrantRerolls(ArtifactOfKnowledgePlugin.ServerConfig.StartingRerolls);
             kcmCpt.ServerAssignAndStart(master.gameObject);
         }
 
@@ -88,7 +88,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         private void TeleporterInteraction_onTeleporterChargedGlobal(TeleporterInteraction obj) {
             if(!NetworkServer.active) return;
             foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
-                kcm.ServerGrantRerolls(ArtifactOfKnowledgePlugin.serverConfig.RerollsPerStage);
+                kcm.ServerGrantRerolls(ArtifactOfKnowledgePlugin.ServerConfig.RerollsPerStage);
             }
         }
 

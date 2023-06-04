@@ -31,7 +31,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         T2Module[] earlyLoad;
 
-        public class ClientConfig : AutoConfigContainer {
+        public class ClientConfigContainer : AutoConfigContainer {
             [AutoConfig("Press to show the upgrade menu while Artifact of Knowledge is active.", AutoConfigFlags.None)]
             [AutoConfigRoOKeybind()]
             public KeyboardShortcut KeybindShowMenu { get; internal set; } = new KeyboardShortcut(KeyCode.U);
@@ -52,7 +52,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             public UIVisibility XpBarUnspentFlashiness { get; internal set; } = UIVisibility.Visible;
         }
 
-        public class ServerConfig : AutoConfigContainer {
+        public class ServerConfigContainer : AutoConfigContainer {
             [AutoConfig("Number of rerolls required to banish an item. If 0, manual banishment is disabled. NYI!", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
             [AutoConfigRoOIntSlider("{0:N0}", 0, 10)]
             public int BanishCost { get; internal set; } = 2;
@@ -66,7 +66,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             public int RerollsPerStage { get; internal set; } = 3;
         }
 
-        public class ItemSelectionConfig : AutoConfigContainer {
+        public class ItemSelectionConfigContainer : AutoConfigContainer {
             [AutoConfig("Weight for each offered item to be Common item. May be upgraded to Uncommon/Rare by relevant LevelInterval settings.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
             public float BaseT1Chance { get; internal set; } = 1f;
@@ -124,9 +124,9 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             public int GearSelectionSize { get; internal set; } = 2;
         }
 
-        public static ServerConfig serverConfig = new ServerConfig();
-        public static ClientConfig clientConfig = new ClientConfig();
-        public static ItemSelectionConfig itemSelectionConfig = new ItemSelectionConfig();
+        public static ServerConfigContainer ServerConfig { get; private set; } = new ServerConfigContainer();
+        public static ClientConfigContainer ClientConfig { get; private set; } = new ClientConfigContainer();
+        public static ItemSelectionConfigContainer ItemSelectionConfig { get; private set; } = new ItemSelectionConfigContainer();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity Engine.")]
         private void Awake() {
@@ -142,12 +142,12 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
-            serverConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Misc.");
-            itemSelectionConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Item Selection");
-            clientConfig.BindAll(cfgFile, "Artifact of Knowledge", "Client");
+            ServerConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Misc.");
+            ItemSelectionConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Item Selection");
+            ClientConfig.BindAll(cfgFile, "Artifact of Knowledge", "Client");
 
-            clientConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
-                if(eventArgs.target.boundProperty.Name == nameof(ClientConfig.XpBarLocation) && Run.instance && KnowledgeArtifact.instance.IsActiveAndEnabled()) {
+            ClientConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
+                if(eventArgs.target.boundProperty.Name == nameof(ClientConfigContainer.XpBarLocation) && Run.instance && KnowledgeArtifact.instance.IsActiveAndEnabled()) {
                     foreach(var hud in GameObject.FindObjectsOfType<RoR2.UI.HUD>()) {
                         KnowledgeXpBar.ModifyHud(hud);
                     }
@@ -157,7 +157,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 }
             };
 
-            itemSelectionConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
+            ItemSelectionConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
                 if(NetworkServer.active && Run.instance && KnowledgeArtifact.instance.IsActiveAndEnabled()) {
                     foreach(var kcm in KnowledgeCharacterManager.readOnlyInstances) {
                         kcm.ServerGenerateSelection();

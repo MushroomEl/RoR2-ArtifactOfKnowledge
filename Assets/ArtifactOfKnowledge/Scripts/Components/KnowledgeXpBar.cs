@@ -3,7 +3,7 @@ using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UIVisibility = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.ClientConfig.UIVisibility;
+using UIVisibility = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.ClientConfigContainer.UIVisibility;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     public class KnowledgeXpBarModule : TILER2.T2Module<KnowledgeXpBarModule> {
@@ -20,7 +20,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             var xpBar = xpBarPrefab.GetComponent<KnowledgeXpBar>();
             xpBar.unspentText.font = LegacyResourcesAPI.Load<TMP_FontAsset>("tmpfonts/misc/tmpsquaresboldhud");
             xpBar.unspentText.material = LegacyResourcesAPI.Load<Material>("tmpfonts/misc/tmpsquaresboldhud");
-            xpBar.unspentTextToken.formatArgs = new object[] { 0, ArtifactOfKnowledgePlugin.clientConfig.KeybindShowMenu.ToString() };
+            xpBar.unspentTextToken.formatArgs = new object[] { 0, ArtifactOfKnowledgePlugin.ClientConfig.KeybindShowMenu.ToString() };
             xpBar.levelText.font = LegacyResourcesAPI.Load<TMP_FontAsset>("tmpfonts/misc/tmpsquaresboldhud");
             xpBar.levelText.material = LegacyResourcesAPI.Load<Material>("tmpfonts/misc/tmpsquaresboldhud");
         }
@@ -50,9 +50,9 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             if(existingBar)
                 GameObject.Destroy(existingBar.gameObject);
 
-            if(ArtifactOfKnowledgePlugin.clientConfig.XpBarLocation == ArtifactOfKnowledgePlugin.ClientConfig.UICluster.Nowhere) return;
+            if(ArtifactOfKnowledgePlugin.ClientConfig.XpBarLocation == ArtifactOfKnowledgePlugin.ClientConfigContainer.UICluster.Nowhere) return;
 
-            bool isTopCenter = ArtifactOfKnowledgePlugin.clientConfig.XpBarLocation == ArtifactOfKnowledgePlugin.ClientConfig.UICluster.TopCenter;
+            bool isTopCenter = ArtifactOfKnowledgePlugin.ClientConfig.XpBarLocation == ArtifactOfKnowledgePlugin.ClientConfigContainer.UICluster.TopCenter;
             var targetCluster = hud.transform.Find(
                 (isTopCenter)
                 ? "MainContainer/MainUIArea/SpringCanvas/TopCenterCluster"
@@ -74,7 +74,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 var lg = xpBarObj.transform.parent.GetComponent<VerticalLayoutGroup>();
             }
 
-            switch(ArtifactOfKnowledgePlugin.clientConfig.XpBarHintText) {
+            switch(ArtifactOfKnowledgePlugin.ClientConfig.XpBarHintText) {
                 case UIVisibility.Visible:
                     xpBar.unspentTextToken.token = "AKNOW_UNSPENT_HINT";
                     break;
@@ -119,15 +119,15 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             targetFill = frac;
 
             if(unspent > 0) {
-                if(ArtifactOfKnowledgePlugin.clientConfig.XpBarUnspentFlashiness != UIVisibility.Hidden) {
-                    if(ArtifactOfKnowledgePlugin.clientConfig.XpBarUnspentFlashiness != UIVisibility.Subdued) {
+                if(ArtifactOfKnowledgePlugin.ClientConfig.XpBarUnspentFlashiness != UIVisibility.Hidden) {
+                    if(ArtifactOfKnowledgePlugin.ClientConfig.XpBarUnspentFlashiness != UIVisibility.Subdued) {
                         pulser1.SetActive(true);
                         pulser2.SetActive(true);
                     }
                     fillPanelPulser.enabled = true;
                 }
                 unspentText.gameObject.SetActive(true);
-                unspentTextToken.formatArgs = new object[] { unspent, ArtifactOfKnowledgePlugin.clientConfig.KeybindShowMenu.ToString() };
+                unspentTextToken.formatArgs = new object[] { unspent, ArtifactOfKnowledgePlugin.ClientConfig.KeybindShowMenu.ToString() };
                 capstoneImage.sprite = KnowledgeArtifact.instance.iconResource;
             } else {
                 fillPanelPulser.enabled = false;
