@@ -67,16 +67,43 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
 		////// Private API //////
 
+		const int MAX_ITERS = 100;
 		protected void Grant(float baseAmount, CharacterMaster singleTarget = null) {
 			foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
 				if(singleTarget && kcm.targetMasterObject != singleTarget.gameObject) continue;
-				var scaledAmount = baseAmount / StartingXp;
-				if(XpScalingType == ScalingType.Exponential)
-					scaledAmount /= Mathf.Pow(ExponentialXpScaling, kcm.level);
-				else
-					scaledAmount /= 1f + LinearXpScaling * kcm.level;
-				//TODO: calculate levels with scaling per level here, current behavior is incorrect for large xp values and only scales based on the lowest level in the range
-				kcm.ServerAddXp(scaledAmount);
+
+				int iters = 0;
+				float xpSimAdd = 0f;
+				float xpSimCurrent = kcm.xp;
+				while(baseAmount > 0f && iters <= MAX_ITERS) {
+					iters++;
+					//translate to scaled
+					var scaledAmount = baseAmount / StartingXp;
+					if(XpScalingType == ScalingType.Exponential)
+						scaledAmount /= Mathf.Pow(ExponentialXpScaling, kcm.level);
+					else
+						scaledAmount /= 1f + LinearXpScaling * kcm.level;
+					//apply
+					var amountToNextLevel = 1f - xpSimCurrent;
+					var amountToApply = Mathf.Max(scaledAmount, amountToNextLevel);
+					xpSimAdd += amountToApply;
+					scaledAmount -= amountToApply;
+					xpSimCurrent = (xpSimCurrent + amountToApply) % 1f;
+					//translate to unscaled and deduct
+					if(XpScalingType == ScalingType.Exponential)
+						scaledAmount *= Mathf.Pow(ExponentialXpScaling, kcm.level);
+					else
+						scaledAmount *= 1f + LinearXpScaling * kcm.level;
+					baseAmount -= scaledAmount * StartingXp;
+				}
+
+				if(baseAmount < 0f)
+					ArtifactOfKnowledgePlugin._logger.LogWarning($"XpSource.Grant in type {this.GetType()} made a bookkeeping error and granted extra XP (remaining baseAmount is {baseAmount}, {iters} iters, granting {xpSimAdd}). Please report this as a bug!");
+
+				if(iters >= MAX_ITERS)
+					ArtifactOfKnowledgePlugin._logger.LogWarning("XpSource.Grant tried to grant too many levels at once. Halting early to prevent lag, some XP will be lost. Check your scaling settings.");
+
+				kcm.ServerAddXp(xpSimAdd);
 			}
         }
 
