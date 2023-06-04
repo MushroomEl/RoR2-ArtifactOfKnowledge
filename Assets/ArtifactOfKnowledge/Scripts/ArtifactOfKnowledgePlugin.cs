@@ -57,38 +57,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             public int RerollsPerStage { get; internal set; } = 3;
         }
 
-        public class XpScalingConfig : AutoConfigContainer {
-            public enum XpSource { LevelXp, Kills, Time }
-            public enum ScalingType { Exponential, Linear }
-            [AutoConfig("Determines how upgrade experience is awarded.\r\n - LevelXp: the vanilla experience system also grants upgrade xp. Note that level xp gain scales with time.\r\n - Kills: 1 kill = 1 upgrade xp.\r\n - Time: 1 second = 1 upgrade xp.", AutoConfigFlags.None)]
-            [AutoConfigRoOChoice()]
-            public XpSource Source { get; internal set; } = XpSource.LevelXp;
-
-            [AutoConfig("Determines how the StartingXp and XpScaling options apply.\r\n - Exponential: each level takes *XpScaling more than the last. Matches scaling of the vanilla experience system.\r\n - Linear: each level takes +XpScaling more than the last. Much shallower scaling compared to Exponential, more suitable for Time/Kills sources.", AutoConfigFlags.None)]
-            [AutoConfigRoOChoice()]
-            public ScalingType XpScalingType { get; internal set; } = ScalingType.Exponential;
-
-            [AutoConfig("Experience, kills, seconds, etc. required for the first upgrade level. Vanilla level system uses 20 xp.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:N0}", 0f, 100f)]
-            public float StartingXp { get; internal set; } = 8f;
-
-            [AutoConfig("Experience scaling rate for upgrade levels, if XpScalingType is Exponential. Vanilla level system uses 1.55.", AutoConfigFlags.PreventNetMismatch, 1f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:P0}", 1.01f, 3f)]
-            public float ExponentialXpScaling { get; internal set; } = 1.4f;
-
-            [AutoConfig("Experience scaling rate for upgrade levels, if XpScalingType is Linear.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:N1}", 0f, 50f)]
-            public float LinearXpScaling { get; internal set; } = 5f;
-
-            [AutoConfig("If true, Teleporter item drops will be converted to upgrade experience (or nothing, if TeleporterDropXp is 0).", AutoConfigFlags.PreventNetMismatch)]
-            [AutoConfigRoOCheckbox()]
-            public bool ConvertTeleporterDrops { get; internal set; } = true;
-
-            [AutoConfig("Fraction of an upgrade level to grant per teleporter drop, if ConvertTeleporterDrops is on.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:P0}", 0f, 5f)]
-            public float TeleporterDropXp { get; internal set; } = 0.5f;
-        }
-
         public class ItemSelectionConfig : AutoConfigContainer {
             [AutoConfig("Weight for each offered item to be Common item. May be upgraded to Uncommon/Rare by relevant LevelInterval settings.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
@@ -149,7 +117,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         public static ServerConfig serverConfig = new ServerConfig();
         public static ClientConfig clientConfig = new ClientConfig();
-        public static XpScalingConfig xpScalingConfig = new XpScalingConfig();
         public static ItemSelectionConfig itemSelectionConfig = new ItemSelectionConfig();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity Engine.")]
@@ -167,7 +134,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
             serverConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Misc.");
-            xpScalingConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server XP Scaling");
             itemSelectionConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Item Selection");
             clientConfig.BindAll(cfgFile, "Artifact of Knowledge", "Client");
 
@@ -178,14 +144,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                     }
                     foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
                         kcm.ClientUpdateXpBar();
-                    }
-                }
-            };
-
-            xpScalingConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
-                if(NetworkServer.active && Run.instance && KnowledgeArtifact.instance.IsActiveAndEnabled()) {
-                    foreach(var kcm in KnowledgeCharacterManager.readOnlyInstances) {
-                        kcm.ServerCalculateXpToNextLevel(true);
                     }
                 }
             };

@@ -3,7 +3,6 @@ using System;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
-using XpSource = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.XpScalingConfig.XpSource;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     public class KnowledgeArtifact : Artifact<KnowledgeArtifact> {
@@ -39,9 +38,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             SceneDirector.onGenerateInteractableCardSelection += OnGenerateInteractableCardSelection;
             DirectorCardCategorySelection.calcCardWeight += CalcCardWeight;
             On.RoR2.UI.HUD.Awake += HUD_Awake;
-            On.RoR2.TeamManager.GiveTeamExperience += TeamManager_GiveTeamExperience;
-            RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
-            On.RoR2.BossGroup.DropRewards += BossGroup_DropRewards;
         }
 
         public override void Uninstall() {
@@ -54,9 +50,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             SceneDirector.onGenerateInteractableCardSelection -= OnGenerateInteractableCardSelection;
             DirectorCardCategorySelection.calcCardWeight -= CalcCardWeight;
             On.RoR2.UI.HUD.Awake -= HUD_Awake;
-            On.RoR2.TeamManager.GiveTeamExperience -= TeamManager_GiveTeamExperience;
-            RoR2.GlobalEventManager.onCharacterDeathGlobal -= GlobalEventManager_onCharacterDeathGlobal;
-            On.RoR2.BossGroup.DropRewards -= BossGroup_DropRewards;
         }
 
 
@@ -116,33 +109,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         private void OnPrePopulateSceneServer(SceneDirector sceneDirector) {
             if(!IsActiveAndEnabled() || RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.Sacrifice)) return; //sacrifice performs same code
             sceneDirector.onPopulateCreditMultiplier *= 0.5f;
-        }
-
-        private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj) {
-            if(NetworkServer.active && IsActiveAndEnabled() && obj.attackerTeamIndex == TeamIndex.Player && ArtifactOfKnowledgePlugin.xpScalingConfig.Source == XpSource.Kills) {
-                foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
-                    kcm.ServerAddXp(1f);
-                }
-            }
-        }
-
-        private void TeamManager_GiveTeamExperience(On.RoR2.TeamManager.orig_GiveTeamExperience orig, TeamManager self, TeamIndex teamIndex, ulong experience) {
-            orig(self, teamIndex, experience);
-            if(NetworkServer.active && IsActiveAndEnabled() && teamIndex == TeamIndex.Player && (ArtifactOfKnowledgePlugin.xpScalingConfig.Source != XpSource.Kills && ArtifactOfKnowledgePlugin.xpScalingConfig.Source != XpSource.Time)) {
-                foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
-                    kcm.ServerAddXp(experience);
-                }
-            }
-        }
-
-        private void BossGroup_DropRewards(On.RoR2.BossGroup.orig_DropRewards orig, BossGroup self) {
-            if(IsActiveAndEnabled() && TeleporterInteraction.instance && TeleporterInteraction.instance.bossGroup == self && ArtifactOfKnowledgePlugin.xpScalingConfig.ConvertTeleporterDrops) {
-                var xp = ArtifactOfKnowledgePlugin.xpScalingConfig.TeleporterDropXp * (self.bonusRewardCount + 1) / (self.scaleRewardsByPlayerCount ? 1f : Run.instance.participatingPlayerCount);
-                if(xp > 0f)
-                    foreach(var kcm in GameObject.FindObjectsOfType<KnowledgeCharacterManager>()) {
-                        kcm.ServerAddXp(kcm.xpToNextLevel * xp);
-                    }
-            } else orig(self);
         }
     }
 }

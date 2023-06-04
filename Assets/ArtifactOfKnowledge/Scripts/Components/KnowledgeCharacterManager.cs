@@ -5,8 +5,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using XpSource = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.XpScalingConfig.XpSource;
-using ScalingType = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.XpScalingConfig.ScalingType;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     public class KnowledgeCharacterManagerModule : TILER2.T2Module<KnowledgeCharacterManagerModule> {
@@ -37,8 +35,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public int rerolls = 0;
         [SyncVar]
         public float xp = 0;
-        [SyncVar]
-        public float xpToNextLevel = 0;
 
         public int level => spentUpgrades + unspentUpgrades;
 
@@ -59,7 +55,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public static event ModifyItemSuperSelectionEventHandler ModifyItemSuperSelection;
 
         const int SAFETY_LEVEL_CAP = 9001;
-        float xpStopwatch = 1f;
 
         public enum UpgradeActionCode {
             Select, Reroll, Banish
@@ -71,7 +66,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         #region Unity Methods
         void Awake() {
             _instances.Add(this);
-            xpToNextLevel = (ulong)ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp;
         }
 
         void OnDestroy() {
@@ -86,16 +80,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 ClientUpdateXpBar();
                 if(ArtifactOfKnowledgePlugin.clientConfig.KeybindShowMenu.IsPressed())
                     ClientShowUpgradePanel();
-            }
-        }
-
-        void FixedUpdate() {
-            if(NetworkServer.active && ArtifactOfKnowledgePlugin.xpScalingConfig.Source == XpSource.Time) {
-                xpStopwatch -= Time.fixedDeltaTime;
-                if(xpStopwatch <= 0f) {
-                    xpStopwatch += 1f;
-                    ServerAddXp(1f);
-                }
             }
         }
         #endregion
@@ -118,32 +102,15 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             if(!targetMasterObject) return;
             xp += amount;
             bool changedLevel = false;
-            while(xp >= xpToNextLevel && level < SAFETY_LEVEL_CAP) {
+            while(xp >= 1f && level < SAFETY_LEVEL_CAP) {
                 changedLevel = true;
                 unspentUpgrades++;
-                xp -= xpToNextLevel;
-                ServerCalculateXpToNextLevel();
+                xp -= 1f;
             }
             if(changedLevel)
                 RpcLevelUpEvent();
 
             RpcForceUpdateUI(changedLevel);
-        }
-
-        [Server]
-        public void ServerCalculateXpToNextLevel(bool reset = false) {
-            if(!targetMasterObject) return;
-            var xpFrac = xp / xpToNextLevel;
-            switch(ArtifactOfKnowledgePlugin.xpScalingConfig.XpScalingType) {
-                case ScalingType.Linear:
-                    xpToNextLevel = ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp + level * ArtifactOfKnowledgePlugin.xpScalingConfig.LinearXpScaling;
-                    break;
-                case ScalingType.Exponential:
-                default:
-                    xpToNextLevel = ArtifactOfKnowledgePlugin.xpScalingConfig.StartingXp * Mathf.Pow(ArtifactOfKnowledgePlugin.xpScalingConfig.ExponentialXpScaling, level);
-                    break;
-            }
-            if(reset) xp = xpToNextLevel * xpFrac;
         }
 
         [Server]
@@ -441,7 +408,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 if(!currentXpBar) {
                     currentXpBar = currentHud.transform.GetComponentInChildren<KnowledgeXpBar>();
                 }
-                if(currentXpBar) currentXpBar.SetFill(Mathf.InverseLerp(0f, xpToNextLevel, xp), unspentUpgrades, spentUpgrades);
+                if(currentXpBar) currentXpBar.SetFill(xp, unspentUpgrades, spentUpgrades);
             }
         }
 
