@@ -11,10 +11,10 @@ namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
 		public override float LinearXpScaling { get; internal set; } = 0.5f;
 
 		public enum SharingMethod {
-			Always, LastHit//, MostDamage //TODO
+			Always, AlwaysSplit, LastHit//, MostDamage //TODO
         }
 
-		[AutoConfig("Determines how kill XP is shared.", AutoConfigFlags.PreventNetMismatch)]
+		[AutoConfig("Determines how kill XP is shared. Always grants the base amount to all players, while AlwaysSplit divides by playercount.", AutoConfigFlags.PreventNetMismatch)]
 		[AutoConfigRoOChoice()]
 		public SharingMethod Sharing { get; internal set; } = SharingMethod.Always;
 
@@ -51,7 +51,10 @@ namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
 				if(Sharing == SharingMethod.LastHit) {
 					singleTarget = obj.attackerMaster;
                 }
-				Grant(1f, singleTarget);
+				var xp = 1f;
+				if(Sharing == SharingMethod.AlwaysSplit)
+					xp /= Run.instance.participatingPlayerCount;
+				Grant(xp, singleTarget);
 			}
 		}
 	}
