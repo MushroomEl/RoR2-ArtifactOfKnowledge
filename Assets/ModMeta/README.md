@@ -54,7 +54,7 @@ Only Experience and Teleporter Drop are enabled by default. The actual Upgrade X
 		<tr>
 			<td><img src="https://github.com/ThinkInvis/RoR2-ArtifactOfKnowledge/blob/master/Assets/ArtifactOfKnowledge/Textures/ItemIcons/Undertow.png?raw=true" width=128></td>
 			<td>
-				<b>Tidal Pull</b><br>
+				<b>Undertow</b><br>
 				Increase chance and limit of Lunar item upgrades.<br>
 				May rarely appear in the Upgrade menu. By default, also replaces all drops from Lunar Chests, and grants a Reroll when picked up.
 			</td>
