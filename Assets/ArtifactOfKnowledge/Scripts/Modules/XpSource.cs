@@ -75,17 +75,18 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 				int iters = 0;
 				float xpSimAdd = 0f;
 				float xpSimCurrent = kcm.xp;
-				while(baseAmount > 0f && iters <= MAX_ITERS) {
+				float remainingBase = baseAmount;
+				while(remainingBase > 0f && iters <= MAX_ITERS) {
 					iters++;
 					//translate to scaled
-					var scaledAmount = baseAmount / StartingXp;
+					var scaledAmount = remainingBase / StartingXp;
 					if(XpScalingType == ScalingType.Exponential)
 						scaledAmount /= Mathf.Pow(ExponentialXpScaling, kcm.level);
 					else
 						scaledAmount /= 1f + LinearXpScaling * kcm.level;
 					//apply
 					var amountToNextLevel = 1f - xpSimCurrent;
-					var amountToApply = Mathf.Max(scaledAmount, amountToNextLevel);
+					var amountToApply = Mathf.Min(scaledAmount, amountToNextLevel);
 					xpSimAdd += amountToApply;
 					scaledAmount -= amountToApply;
 					xpSimCurrent = (xpSimCurrent + amountToApply) % 1f;
@@ -94,11 +95,11 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 						scaledAmount *= Mathf.Pow(ExponentialXpScaling, kcm.level);
 					else
 						scaledAmount *= 1f + LinearXpScaling * kcm.level;
-					baseAmount -= scaledAmount * StartingXp;
+					remainingBase = scaledAmount * StartingXp;
 				}
 
-				if(baseAmount < 0f)
-					ArtifactOfKnowledgePlugin._logger.LogWarning($"XpSource.Grant in type {this.GetType()} made a bookkeeping error and granted extra XP (remaining baseAmount is {baseAmount}, {iters} iters, granting {xpSimAdd}). Please report this as a bug!");
+				if(remainingBase < 0f)
+					ArtifactOfKnowledgePlugin._logger.LogWarning($"XpSource.Grant in type {this.GetType()} made a bookkeeping error and granted extra XP (remaining baseAmount is {remainingBase}, {iters} iters, granting {xpSimAdd}). Please report this as a bug!");
 
 				if(iters >= MAX_ITERS)
 					ArtifactOfKnowledgePlugin._logger.LogWarning("XpSource.Grant tried to grant too many levels at once. Halting early to prevent lag, some XP will be lost. Check your scaling settings.");
