@@ -2,13 +2,17 @@
 using TILER2;
 
 namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
-	public class KillBaseHP : XpSource<KillBaseHP> {
+	public class KillHP : XpSource<KillHP> {
 
 		////// Config //////
 
 		public override ScalingType XpScalingType { get; internal set; } = ScalingType.Linear;
 		public override float StartingXp { get; internal set; } = 8f;
 		public override float LinearXpScaling { get; internal set; } = 0.5f;
+
+		[AutoConfig("If true, only base HP with Elite modifiers will be used (will not scale with levels/time nor other items), not including shield other than that from Overloading elites. If false, the post-calculation max HP stat is used, including shield.", AutoConfigFlags.PreventNetMismatch)]
+		[AutoConfigRoOCheckbox()]
+		public bool BaseHPOnly { get; internal set; } = true;
 
 		public enum SharingMethod {
 			Always, AlwaysSplit, LastHit//, MostDamage //TODO
@@ -47,10 +51,17 @@ namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
 
 		private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj) {
 			if(CanGrant() && obj.attackerTeamIndex == TeamIndex.Player && obj.victimBody) {
-				var xp = obj.victimBody.baseMaxHealth / 100f;
-				if(obj.victimBody.inventory) {
-					var eliteBoost = obj.victimBody.inventory.GetItemCount(RoR2Content.Items.BoostHp);
-					xp *= 1f + eliteBoost * 0.1f;
+				float xp;
+				if(BaseHPOnly) {
+					xp = obj.victimBody.baseMaxHealth / 100f;
+					if(obj.victimBody.inventory) {
+						var eliteBoost = obj.victimBody.inventory.GetItemCount(RoR2Content.Items.BoostHp);
+						var swarmsCut = obj.victimBody.inventory.GetItemCount(RoR2Content.Items.CutHp);
+						xp *= 1f + eliteBoost * 0.1f;
+						xp /= 1f + swarmsCut;
+					}
+				} else {
+					xp = obj.victimBody.maxHealth + obj.victimBody.maxShield;
                 }
 				CharacterMaster singleTarget = null;
 				if(Sharing == SharingMethod.LastHit) {
