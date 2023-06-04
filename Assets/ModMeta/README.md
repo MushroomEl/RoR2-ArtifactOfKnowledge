@@ -27,7 +27,7 @@ Only Experience and Teleporter Drop are enabled by default. The actual Upgrade X
 - **Experience**: The vanilla XP system also grants Upgrade XP. Scales exponentially by default, with slightly faster levels than the vanilla system (8XP x1.4 per level; vanilla is 20XP x1.55 per level).
 - **Teleporter Drop**: Gain 1 XP per teleporter drop, divided by participating player count. Default scaling: 2XP, does not scale (clearing a teleporter always grants half a level). By default, prevents actual teleporter drops from spawning.
 - **Kills**: Gain 1 XP per kill. Default scaling: 8XP +0.5 per level. May be configured to only grant XP to the player who struck the killing blow.
-- **Kill HP**: Gain 1 XP per 100 enemy base health on kill (scales with only Elite and Swarms health modifiers and nothing else). Default scaling: 8XP + 0.5 per level. May be configured to only grant XP to the player who struck the killing blow. May be configured to scale with total modified HP instead of base HP.
+- **Kill HP**: Gain 1 XP per 50 enemy base health on kill (scales with only Elite and Swarms health modifiers and nothing else). Default scaling: 8XP + 0.5 per level. May be configured to only grant XP to the player who struck the killing blow. May be configured to scale with total modified HP instead of base HP.
 - **Time**: Gain 1 XP per second while the run timer is progressing. Default scaling: 20XP +2 per level.
 
 ### Items

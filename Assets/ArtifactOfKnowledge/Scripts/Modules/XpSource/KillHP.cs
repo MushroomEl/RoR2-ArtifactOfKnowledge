@@ -53,7 +53,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
 			if(CanGrant() && obj.attackerTeamIndex == TeamIndex.Player && obj.victimBody) {
 				float xp;
 				if(BaseHPOnly) {
-					xp = obj.victimBody.baseMaxHealth / 100f;
+					xp = obj.victimBody.baseMaxHealth / 50f;
 					if(obj.victimBody.inventory) {
 						var eliteBoost = obj.victimBody.inventory.GetItemCount(RoR2Content.Items.BoostHp);
 						var swarmsCut = obj.victimBody.inventory.GetItemCount(RoR2Content.Items.CutHp);
