@@ -44,13 +44,16 @@ namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
 		////// Hooks //////
 
 		private void BossGroup_DropRewards(On.RoR2.BossGroup.orig_DropRewards orig, BossGroup self) {
-			if(!Intercept || !KnowledgeArtifact.instance.IsActiveAndEnabled())
+			bool calledOrig = false;
+			if(!Intercept || !KnowledgeArtifact.instance.IsActiveAndEnabled()) {
 				orig(self);
+				calledOrig = true;
+			}
 			if(CanGrant() && TeleporterInteraction.instance && TeleporterInteraction.instance.bossGroup == self) {
 				var xp = (self.bonusRewardCount + 1) / (self.scaleRewardsByPlayerCount ? 1f : Run.instance.participatingPlayerCount);
 				if(xp > 0f)
 					Grant(xp);
-			}
+			} else if(!calledOrig) orig(self);
 		}
 	}
 }
