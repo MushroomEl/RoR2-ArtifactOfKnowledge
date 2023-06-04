@@ -39,7 +39,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
 		////// Hooks //////
 
 		private void Run_FixedUpdate(On.RoR2.Run.orig_FixedUpdate orig, Run self) {
-			if(CanGrant()) {
+			if(CanGrant() && !Run.instance.isRunStopwatchPaused) {
 				stopwatch -= UnityEngine.Time.fixedDeltaTime;
 				if(stopwatch <= 0f) {
 					stopwatch = 1f;
