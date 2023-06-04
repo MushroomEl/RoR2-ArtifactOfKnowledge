@@ -18,12 +18,28 @@ While enabled, the Artifact will add a second level system, upgrade levels, whic
 
 Every 5 levels and 15 levels, the selection of items will be upgraded to uncommon or rare, respectively. Any offered item also has a small chance to be Void and a smaller chance to be Lunar.
 
+## Mod Content
+
+### Upgrade XP Sources
+
+Only Experience and Teleporter Drop are enabled by default. The actual Upgrade XP required for every level is always 1; individual XP Sources are instead scaled down by their XP-to-level requirements (e.g. with default config, Kills grants 1/8 actual Upgrade XP per kill at first level, 1/8.5 at second, etc.).
+
+- **Experience**: The vanilla XP system also grants Upgrade XP. Scales exponentially by default, with slightly faster levels than the vanilla system (8XP x1.4 per level; vanilla is 20XP x1.55 per level).
+- **Teleporter Drop**: Gain 1 XP per teleporter drop, divided by participating player count. Default scaling: 2XP, does not scale (clearing a teleporter always grants half a level).
+- **Kills**: Gain 1 XP per kill. Default scaling: 8XP +0.5 per level. May be configured to only grant XP to the player who struck the killing blow.
+- **Kill HP**: Gain 1 XP per 100 enemy base health on kill (scales with only Elite and Swarms health modifiers and nothing else). Default scaling: 8XP + 0.5 per level. May be configured to only grant XP to the player who struck the killing blow. May be configured to scale with total modified HP instead of base HP.
+- **Time**: Gain 1 XP per second while the run timer is progressing. Default scaling: 20XP +2 per level.
+
+### Meta Items
+
+Meta-tier items only appear while Artifact of Knowledge is enabled. They usually have no direct effect on gameplay, instead changing how Artifact of Knowledge functions within a run.
+
 ## Issues/TODO
 
-- TODO: a new Meta item tier which affects how item selections are chosen (and also displays Rerolls in the item bar for convenience).
+- Issue: the upgrade menu cannot be opened while moving.
+- TODO: implement Rerolls as a Meta item, to display in the item bar for convenience.
 - TODO: gear swaps other than Equipment -- survivors, skills, *maybe* other artifacts, etc.
 - TODO: visual clientside feedback for invalid actions in the upgrade menu. Currently audio-only.
-- TODO: change or remove remaining item spawns untouched by Sacrifice list, e.g. Void pods.
 - See the GitHub repo for more!
 
 ## Changelog
@@ -31,6 +47,29 @@ Every 5 levels and 15 levels, the selection of items will be upgraded to uncommo
 The 5 latest updates are listed below. For a full changelog, see: https://github.com/ThinkInvis/RoR2-ArtifactOfKnowledge/blob/master/changelog.md
 
 (🌧︎: Involves an accepted GitHub Pull Request or other significant assistance from the community. Thanks for your help!)
+
+**3.0.0**
+
+- Added the Meta item tier.
+- New items:
+	- Tidal Pull (Meta):
+		- Replaces all drops from Void pods by default.
+	- Undertow (Meta):
+		- Replaces all drops from Lunar pods by default.
+- XP source rework:
+	- XP sources are now implemented as separate modules, meaning multiple may be active at once with different scaling settings.
+		- XP to next level is now always 1; individual XP sources scale down per level instead, with severity depending on their settings.
+	- Implemented new XP sources:
+		- KillHP, which scales based on either enemy base max health (Elite modifiers count, all other items and HP-per-enemy-level do not) or enemy max health stat (affected by all items and levels).
+		- TeleporterDrop, migrated from a previously standalone XpScaling setting.
+			- Has a separate config option to prevent teleporter drops, even if XP gain from such is disabled.
+		- DamageFracDealt, which scales based on percentage of damage stat.
+		- DamageDealt, which does not scale down.
+		- Gold, which optionally scales over time using the same formula applied to interactables.
+	- The Kills XP source, and several of the new XP sources, now allow XP sharing to be turned off. In this case, XP will be granted to the most relevant player (e.g. last-hit for kills).
+- Added some accessibility configs:
+	- Visibility of keybind text hint in the experience bar: may now be visible (brighter text), subdued (previously only option), or hidden.
+	- Flashy animations on the experience bar while the player has unspent upgrades: may now be visible (previously only option), subdued (no aura, only the bar itself pulses), or hidden.
 
 **2.0.1**
 
