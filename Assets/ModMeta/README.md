@@ -52,10 +52,10 @@ The 5 latest updates are listed below. For a full changelog, see: https://github
 
 - Added the Meta item tier.
 - New items:
-	- Tidal Pull (Meta):
-		- Replaces all drops from Void pods by default.
-	- Undertow (Meta):
+	- Tidal Pull (Meta): Increase chance and limit of Lunar item upgrades.
 		- Replaces all drops from Lunar pods by default.
+	- Undertow (Meta): Increase chance and limit of Void item upgrades.
+		- Replaces all drops from Void pods by default.
 - XP source rework:
 	- XP sources are now implemented as separate modules, meaning multiple may be active at once with different scaling settings.
 		- XP to next level is now always 1; individual XP sources scale down per level instead, with severity depending on their settings.
