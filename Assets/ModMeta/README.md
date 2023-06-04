@@ -30,9 +30,37 @@ Only Experience and Teleporter Drop are enabled by default. The actual Upgrade X
 - **Kill HP**: Gain 1 XP per 100 enemy base health on kill (scales with only Elite and Swarms health modifiers and nothing else). Default scaling: 8XP + 0.5 per level. May be configured to only grant XP to the player who struck the killing blow. May be configured to scale with total modified HP instead of base HP.
 - **Time**: Gain 1 XP per second while the run timer is progressing. Default scaling: 20XP +2 per level.
 
-### Meta Items
+### Items
 
-Meta-tier items only appear while Artifact of Knowledge is enabled. They usually have no direct effect on gameplay, instead changing how Artifact of Knowledge functions within a run.
+<table>
+	<thead>
+		<tr>
+			<th>Icon</th>
+			<th>Name/Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="2" align="center"><h3>Meta Items</h3><br>Meta-tier items only appear while Artifact of Knowledge is enabled. They usually have no direct effect on gameplay, instead changing how Artifact of Knowledge functions within a run.</td>
+		</tr>
+		<tr>
+			<td><img src="https://github.com/ThinkInvis/RoR2-ArtifactOfKnowledge/blob/master/Assets/ArtifactOfKnowledge/Textures/ItemIcons/TidalPull.png?raw=true" width=128></td>
+			<td>
+				<b>Tidal Pull</b><br>
+				Increase chance and limit of Lunar item upgrades.<br>
+				May rarely appear in the Upgrade menu. By default, also replaces all drops from Void Chests, and grants a Reroll when picked up.
+			</td>
+		</tr>
+		<tr>
+			<td><img src="https://github.com/ThinkInvis/RoR2-ArtifactOfKnowledge/blob/master/Assets/ArtifactOfKnowledge/Textures/ItemIcons/Undertow.png?raw=true" width=128></td>
+			<td>
+				<b>Tidal Pull</b><br>
+				Increase chance and limit of Lunar item upgrades.<br>
+				May rarely appear in the Upgrade menu. By default, also replaces all drops from Lunar Chests, and grants a Reroll when picked up.
+			</td>
+		</tr>
+	</tbody>
+</table>
 
 ## Issues/TODO
 
