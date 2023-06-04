@@ -15,6 +15,16 @@
 		"AKNOW_VOID_DESC_3": "How did this happen, we're smarter than this?",
 		"AKNOW_VOID_DESC_4": "Maybe take it a little easier on the Banish button.",
 		"AKNOW_VOID_DESC_5": "You're all out of cards!",
-		"AKNOW_VOID_DESC_6": "Nothing to see here."
+		"AKNOW_VOID_DESC_6": "Nothing to see here.",
+
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_NAME": "Tidal Pull",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_PICKUP": "Increase chance and limit of Lunar item upgrades.",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_DESC": "The Upgrade menu will offer up to <style=cIsUtility>1 <style=cStack>(+1 per stack)</style></style> more <style=cIsLunar>Lunar</style> item. <style=cIsLunar>Lunar</style> items appear <style=cIsUtility>{0} <style=cStack>(+{0} per stack)</style></style> more often, relative to base chance. Gain <style=cIsUtility>1 Reroll</style> per stack.",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_LORE": "",
+
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_NAME": "Undertow",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_PICKUP": "Increase chance and limit of Void item upgrades.",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_DESC": "The Upgrade menu will offer up to <style=cIsUtility>1 <style=cStack>(+1 per stack)</style></style> more <style=cIsVoid>Void</style> item. <style=cIsVoid>Void</style> items appear <style=cIsUtility>{0} <style=cStack>(+{0} per stack)</style></style> more often, relative to base chance. Gain <style=cIsUtility>1 Reroll</style> per stack.",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_LORE": ""
 	}
 }

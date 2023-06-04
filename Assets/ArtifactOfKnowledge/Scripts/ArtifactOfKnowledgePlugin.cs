@@ -128,6 +128,8 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public static ClientConfigContainer ClientConfig { get; private set; } = new ClientConfigContainer();
         public static ItemSelectionConfigContainer ItemSelectionConfig { get; private set; } = new ItemSelectionConfigContainer();
 
+        public static ItemTierDef MetaItemTier { get; private set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity Engine.")]
         private void Awake() {
             _logger = Logger;
@@ -165,6 +167,18 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 }
             };
 
+            MetaItemTier = resources.LoadAsset<ItemTierDef>("Assets/ArtifactOfKnowledge/ScriptableObjects/MetaItemTier.asset");
+            var metaColor = new Color(0.1f, 0.05f, 0.7f);
+            var metaColorDark = new Color(0.05f, 0.025f, 0.4f);
+            //MetaItemTier.colorIndex = R2API.ColorsAPI.RegisterColor(metaColor);
+            //MetaItemTier.darkColorIndex = R2API.ColorsAPI.RegisterColor(metaColorDark);
+            MetaItemTier.colorIndex = ColorCatalog.ColorIndex.LunarItem;
+            MetaItemTier.darkColorIndex = ColorCatalog.ColorIndex.LunarItemDark;
+
+            ModifyItemTierPrefabs(metaColor);
+
+            R2API.ContentAddition.AddItemTierDef(MetaItemTier);
+
             var modInfo = new T2Module.ModInfo {
                 displayName = "Artifact of Knowledge",
                 longIdentifier = "ArtifactOfKnowledge",
@@ -176,6 +190,39 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             earlyLoad = new T2Module[] { };
             T2Module.SetupAll_PluginAwake(earlyLoad);
             T2Module.SetupAll_PluginAwake(allModules.Except(earlyLoad));
+        }
+
+        void ModifyItemTierPrefabs(Color metaColor) {
+            var highlight = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/HighlightLunarItem.prefab").WaitForCompletion(), "AKNOWTmpSetupPrefab", false);
+
+            highlight.GetComponent<RoR2.UI.HighlightRect>().highlightColor = metaColor;
+
+            highlight = R2API.PrefabAPI.InstantiateClone(highlight, "AKNOWMetaHighlight", false);
+            MetaItemTier.highlightPrefab = highlight;
+
+
+            var droplet = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/LunarOrb.prefab").WaitForCompletion(), "AKNOWTmpSetupPrefab", false);
+
+            var tr = droplet.transform.Find("VFX").GetComponent<TrailRenderer>();
+            tr.colorGradient.colorKeys[0] = new GradientColorKey(metaColor, tr.colorGradient.colorKeys[0].time);
+
+            var coreps = droplet.transform.Find("VFX/Core").GetComponent<ParticleSystem>();
+            var ccol = coreps.colorOverLifetime;
+            var ccolColor = ccol.color;
+            ccolColor.gradientMax.colorKeys[0] = new GradientColorKey(metaColor, ccolColor.gradientMax.colorKeys[0].time);
+            ccol.color = ccolColor;
+
+            var pl = droplet.transform.Find("VFX/Point light").GetComponent<Light>();
+            pl.color = metaColor;
+
+            var pgps = droplet.transform.Find("VFX/PulseGlow (1)").GetComponent<ParticleSystem>();
+            ccol = pgps.colorOverLifetime;
+            ccolColor = ccol.color;
+            ccolColor.gradientMax.colorKeys[0] = new GradientColorKey(metaColor, ccolColor.gradientMax.colorKeys[0].time);
+            ccol.color = ccolColor;
+
+            droplet = R2API.PrefabAPI.InstantiateClone(droplet, "AKNOWMetaDroplet", false);
+            MetaItemTier.dropletDisplayPrefab = droplet;
         }
 
         private void UnstubShaders() {
