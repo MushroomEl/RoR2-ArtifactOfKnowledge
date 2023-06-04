@@ -74,11 +74,17 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 var lg = xpBarObj.transform.parent.GetComponent<VerticalLayoutGroup>();
             }
 
-            xpBar.unspentTextToken.token = ArtifactOfKnowledgePlugin.clientConfig.XpBarHintText switch {
-                UIVisibility.Visible => "AKNOW_UNSPENT_HINT",
-                UIVisibility.Subdued => "AKNOW_UNSPENT_HINTSUBDUED",
-                _ => "AKNOW_UNSPENT"
-            };
+            switch(ArtifactOfKnowledgePlugin.clientConfig.XpBarHintText) {
+                case UIVisibility.Visible:
+                    xpBar.unspentTextToken.token = "AKNOW_UNSPENT_HINT";
+                    break;
+                case UIVisibility.Subdued:
+                    xpBar.unspentTextToken.token = "AKNOW_UNSPENT_HINTSUBDUED";
+                    break;
+                default:
+                    xpBar.unspentTextToken.token = "AKNOW_UNSPENT";
+                    break;
+            }
 
             xpBar.SetFill(0, 0, 0);
         }
