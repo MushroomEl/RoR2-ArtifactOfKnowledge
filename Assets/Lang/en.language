@@ -5,7 +5,9 @@
 
 		"AKNOW_PANEL_TEXT": "<b>Knowledge is Power</b>\r\n<i>Pick a new item, or a gear swap.</i>\r\n- {0} upgrade points // {1} rerolls -",
 		"AKNOW_PANEL_REROLL": "Reroll",
-		"AKNOW_UNSPENT": "{0} Unspent Upgrades <style=cStack>Press [{1}]</style>",
+		"AKNOW_UNSPENT": "{0} Unspent Upgrades",
+		"AKNOW_UNSPENT_HINTSUBDUED": "{0} Unspent Upgrades <style=cStack>Press [{1}]</style>",
+		"AKNOW_UNSPENT_HINT": "{0} Unspent Upgrades // Press [{1}]",
 		"AKNOW_VOID_NAME": "Nothing",
 		"AKNOW_VOID_DESC_0": "You've exhausted your options. Nothing is left here.",
 		"AKNOW_VOID_DESC_1": "You stare into the Void...",

@@ -37,10 +37,19 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             public KeyboardShortcut KeybindShowMenu { get; internal set; } = new KeyboardShortcut(KeyCode.U);
 
             public enum UICluster { TopCenter, BottomLeft, Nowhere }
+            public enum UIVisibility { Visible, Subdued, Hidden }
 
             [AutoConfig("Controls where the upgrade experience UI displays.", AutoConfigFlags.None)]
             [AutoConfigRoOChoice()]
             public UICluster XpBarLocation { get; internal set; } = UICluster.BottomLeft;
+
+            [AutoConfig("Controls how visible the keybind hint text in the experience bar is.", AutoConfigFlags.None)]
+            [AutoConfigRoOChoice()]
+            public UIVisibility XpBarHintText { get; internal set; } = UIVisibility.Subdued;
+
+            [AutoConfig("Controls how visible the unspent upgrades animation on the experience bar are.", AutoConfigFlags.None)]
+            [AutoConfigRoOChoice()]
+            public UIVisibility XpBarUnspentFlashiness { get; internal set; } = UIVisibility.Visible;
         }
 
         public class ServerConfig : AutoConfigContainer {

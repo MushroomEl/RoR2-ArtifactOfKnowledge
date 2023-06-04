@@ -3,6 +3,7 @@ using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UIVisibility = ThinkInvisible.ArtifactOfKnowledge.ArtifactOfKnowledgePlugin.ClientConfig.UIVisibility;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     public class KnowledgeXpBarModule : TILER2.T2Module<KnowledgeXpBarModule> {
@@ -72,6 +73,13 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 xpBar.capstoneImage.rectTransform.localPosition -= new Vector3(4f, 0f, 0f);
                 var lg = xpBarObj.transform.parent.GetComponent<VerticalLayoutGroup>();
             }
+
+            xpBar.unspentTextToken.token = ArtifactOfKnowledgePlugin.clientConfig.XpBarHintText switch {
+                UIVisibility.Visible => "AKNOW_UNSPENT_HINT",
+                UIVisibility.Subdued => "AKNOW_UNSPENT_HINTSUBDUED",
+                _ => "AKNOW_UNSPENT"
+            };
+
             xpBar.SetFill(0, 0, 0);
         }
 
@@ -105,9 +113,13 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             targetFill = frac;
 
             if(unspent > 0) {
-                fillPanelPulser.enabled = true;
-                pulser1.SetActive(true);
-                pulser2.SetActive(true);
+                if(ArtifactOfKnowledgePlugin.clientConfig.XpBarUnspentFlashiness != UIVisibility.Hidden) {
+                    if(ArtifactOfKnowledgePlugin.clientConfig.XpBarUnspentFlashiness != UIVisibility.Subdued) {
+                        pulser1.SetActive(true);
+                        pulser2.SetActive(true);
+                    }
+                    fillPanelPulser.enabled = true;
+                }
                 unspentText.gameObject.SetActive(true);
                 unspentTextToken.formatArgs = new object[] { unspent, ArtifactOfKnowledgePlugin.clientConfig.KeybindShowMenu.ToString() };
                 capstoneImage.sprite = KnowledgeArtifact.instance.iconResource;
