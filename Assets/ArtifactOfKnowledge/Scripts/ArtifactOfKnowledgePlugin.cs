@@ -11,6 +11,7 @@ using System;
 using RoR2;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using static ThinkInvisible.ArtifactOfKnowledge.MiscUtil;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
@@ -72,34 +73,17 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public class ItemSelectionConfigContainer : AutoConfigContainer {
             //dictionaries have custom impl during awake/catalog-init, instead of direct attributes
             public Dictionary<ItemTierDef, int> TierMultipliers = new Dictionary<ItemTierDef, int>();
+            public Dictionary<ItemTierDef, float> TierWeights = new Dictionary<ItemTierDef, float>();
+            public Dictionary<ItemTierDef, int> TierUpgradeIntervals = new Dictionary<ItemTierDef, int>();
+            public Dictionary<ItemTierDef, int> TierCaps = new Dictionary<ItemTierDef, int>();
 
-            [AutoConfig("Weight for each offered item to be Common item. May be upgraded to Uncommon/Rare by relevant LevelInterval settings.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+            [AutoConfig("Chance for normal item drops to be converted to Void. Stacks with normal tiers in the Multiplier section.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
-            public float BaseT1Chance { get; internal set; } = 1f;
+            public float MultVoidWeight { get; internal set; } = 0.06f;
 
-            [AutoConfig("Weight for each offered item to be an Uncommon item. Does not apply while UncommonLevelInterval/RareLevelInterval is overriding selection.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
-            public float BaseT2Chance { get; internal set; } = 0f;
-
-            [AutoConfig("Weight for each offered item to be a Rare item. Does not apply while UncommonLevelInterval/RareLevelInterval is overriding selection.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
-            public float BaseT3Chance { get; internal set; } = 0f;
-
-            [AutoConfig("Weight for each offered item to be a Void item. Stacks with BaseT2Chance, UncommonLevelInterval, etc.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
-            public float BaseVoidChance { get; internal set; } = 0.06f;
-
-            [AutoConfig("Weight for each offered item to be a Lunar item.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
-            public float BaseLunarChance { get; internal set; } = 0.04f;
-
-            [AutoConfig("Maximum number of Void items to offer per selection.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-            [AutoConfigRoOIntSlider("{0:N0}", 0, 30)]
-            public int BaseMaxVoid { get; internal set; } = 2;
-
-            [AutoConfig("Maximum number of Lunar items to offer per selection.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-            [AutoConfigRoOIntSlider("{0:N0}", 0, 30)]
-            public int BaseMaxLunar { get; internal set; } = 1;
+            [AutoConfig("Total cap for Void items of any tier to appear. 0 for unlimited. DOES NOT stack with normal tiers in the Caps section.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
+            [AutoConfigRoOIntSlider("{0:P0}", 0, 30)]
+            public int VoidCap { get; internal set; } = 1;
 
             [AutoConfig("Weight for each offered gear to be an equipment.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
@@ -108,14 +92,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             [AutoConfig("Weight for each offered gear to be a Lunar equipment.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
             public float BaseLunarEquipChance { get; internal set; } = 0.03f;
-
-            [AutoConfig("Levels which are a multiple of this number will offer Uncommon-tier items (default is Common). 0 to disable level-dependent upgrading.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-            [AutoConfigRoOIntSlider("{0:N0}", 0, 30)]
-            public int UncommonLevelInterval { get; internal set; } = 5;
-
-            [AutoConfig("Levels which are a multiple of this number will offer Rare-tier items (default is Common), taking precedence over UncommonLevelInterval. 0 to disable level-dependent upgrading.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-            [AutoConfigRoOIntSlider("{0:N0}", 0, 30)]
-            public int RareLevelInterval { get; internal set; } = 15;
 
             [AutoConfig("If true, one each of the offered items will always be Damage-, Utility-, and Healing-related.", AutoConfigFlags.PreventNetMismatch)]
             [AutoConfigRoOCheckbox()]
@@ -151,7 +127,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
             ServerConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Misc.");
-            ItemSelectionConfig.BindAll(cfgFile, "Artifact of Knowledge", "Server Item Selection");
+            ItemSelectionConfig.BindAll(cfgFile, "AoK Item Selection", "Misc.");
             ClientConfig.BindAll(cfgFile, "Artifact of Knowledge", "Client");
 
             ClientConfig.ConfigEntryChanged += (newValueBoxed, eventArgs) => {
@@ -200,13 +176,39 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
         [SystemInitializer(typeof(ItemTierCatalog))]
         static void InitItemTierConfigs() {
+            //setup default values
             foreach(var tier in ItemTierCatalog.allItemTierDefs) {
-                if(!tier.isDroppable) continue;
+                if(!tier.isDroppable || tier.tier.IsVoid()) continue; //void has special handling
                 ItemSelectionConfig.TierMultipliers[tier] = 1; //default values
+                ItemSelectionConfig.TierWeights[tier] = 0f;
+                ItemSelectionConfig.TierCaps[tier] = 0;
+                ItemSelectionConfig.TierUpgradeIntervals[tier] = 0;
             }
-            ItemSelectionConfig.Bind(typeof(ItemSelectionConfigContainer).GetPropertyCached(nameof(ItemSelectionConfigContainer.TierMultipliers)), cfgFile, "ArtifactOfKnowledge", "Server Item Multipliers", new AutoConfigAttribute($"<AIC.DictKeyField.{nameof(ItemTierDef.name)}>", "Items of this tier will grant this many copies when selected in the Upgrade menu.", AutoConfigFlags.BindDict | AutoConfigFlags.PreventNetMismatch, 1, int.MaxValue));
+
+            ItemSelectionConfig.TierWeights[ItemTierCatalog.GetItemTierDef(ItemTier.Tier1)] = 1f;
+            ItemSelectionConfig.TierWeights[ItemTierCatalog.GetItemTierDef(ItemTier.Lunar)] = 0.04f;
+
+            ItemSelectionConfig.TierCaps[ItemTierCatalog.GetItemTierDef(ItemTier.Lunar)] = 1;
+
+            ItemSelectionConfig.TierUpgradeIntervals[ItemTierCatalog.GetItemTierDef(ItemTier.Tier2)] = 5;
+            ItemSelectionConfig.TierUpgradeIntervals[ItemTierCatalog.GetItemTierDef(ItemTier.Tier3)] = 15;
+
+            //bind
+            ItemSelectionConfig.Bind(typeof(ItemSelectionConfigContainer).GetPropertyCached(nameof(ItemSelectionConfigContainer.TierMultipliers)), cfgFile, "AoK Item Selection", "Multipliers", new AutoConfigAttribute($"<AIC.DictKeyField.{nameof(ItemTierDef.name)}>", "Items of this tier will grant this many copies when selected in the Upgrade menu.", AutoConfigFlags.BindDict | AutoConfigFlags.PreventNetMismatch, 1, int.MaxValue));
             foreach(var k in ItemSelectionConfig.TierMultipliers.Keys)
                 ItemSelectionConfig.BindRoO(ItemSelectionConfig.FindConfig(nameof(ItemSelectionConfig.TierMultipliers), k), new AutoConfigRoOIntSliderAttribute("{0:N0}",1,10));
+
+            ItemSelectionConfig.Bind(typeof(ItemSelectionConfigContainer).GetPropertyCached(nameof(ItemSelectionConfigContainer.TierWeights)), cfgFile, "AoK Item Selection", "Weights", new AutoConfigAttribute($"<AIC.DictKeyField.{nameof(ItemTierDef.name)}>", "Weight for this item tier to be offered (higher = more often, relative to others).", AutoConfigFlags.BindDict | AutoConfigFlags.PreventNetMismatch, 0f, 1f));
+            foreach(var k in ItemSelectionConfig.TierWeights.Keys)
+                ItemSelectionConfig.BindRoO(ItemSelectionConfig.FindConfig(nameof(ItemSelectionConfig.TierWeights), k), new AutoConfigRoOSliderAttribute("{0:P0}", 0f, 1f));
+
+            ItemSelectionConfig.Bind(typeof(ItemSelectionConfigContainer).GetPropertyCached(nameof(ItemSelectionConfigContainer.TierCaps)), cfgFile, "AoK Item Selection", "Caps", new AutoConfigAttribute($"<AIC.DictKeyField.{nameof(ItemTierDef.name)}>", "Maximum number of this item tier to offer across the entire selection. 0 for unlimited.", AutoConfigFlags.BindDict | AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue));
+            foreach(var k in ItemSelectionConfig.TierCaps.Keys)
+                ItemSelectionConfig.BindRoO(ItemSelectionConfig.FindConfig(nameof(ItemSelectionConfig.TierCaps), k), new AutoConfigRoOIntSliderAttribute("{0:N0}", 0, 30));
+
+            ItemSelectionConfig.Bind(typeof(ItemSelectionConfigContainer).GetPropertyCached(nameof(ItemSelectionConfigContainer.TierUpgradeIntervals)), cfgFile, "AoK Item Selection", "Upgrade Intervals", new AutoConfigAttribute($"<AIC.DictKeyField.{nameof(ItemTierDef.name)}>", "If nonzero, all offered items will be of this tier after this many levels. Longer intervals take precedence.", AutoConfigFlags.BindDict | AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue));
+            foreach(var k in ItemSelectionConfig.TierUpgradeIntervals.Keys)
+                ItemSelectionConfig.BindRoO(ItemSelectionConfig.FindConfig(nameof(ItemSelectionConfig.TierUpgradeIntervals), k), new AutoConfigRoOIntSliderAttribute("{0:N0}", 0, 50));
         }
 
         void ModifyItemTierPrefabs(Color metaColor) {

@@ -191,38 +191,31 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         #endregion
 
         #region Server Selection Generation
+
         public List<WeightedSelection<PickupIndex>.ChoiceInfo> GenerateItemsSuperSelection() {
             var retv = new List<WeightedSelection<PickupIndex>.ChoiceInfo>();
 
             Dictionary<ItemTier, float> tierWeights = new Dictionary<ItemTier, float>();
 
-            bool upgradeUncommon = (spentUpgrades % ArtifactOfKnowledgePlugin.ItemSelectionConfig.UncommonLevelInterval) == (ArtifactOfKnowledgePlugin.ItemSelectionConfig.UncommonLevelInterval - 1);
-            bool upgradeRare = (spentUpgrades % ArtifactOfKnowledgePlugin.ItemSelectionConfig.RareLevelInterval) == (ArtifactOfKnowledgePlugin.ItemSelectionConfig.RareLevelInterval - 1);
-
-            if(upgradeRare) { //TODO: migrate this to a standalone module using ModifyItemTierWeights
-                tierWeights[ItemTier.Tier1] = 0f;
-                tierWeights[ItemTier.Tier2] = 0f;
-                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance;
-                tierWeights[ItemTier.VoidTier1] = 0f;
-                tierWeights[ItemTier.VoidTier2] = 0f;
-                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
-            } else if(upgradeUncommon) {
-                tierWeights[ItemTier.Tier1] = 0f;
-                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance;
-                tierWeights[ItemTier.Tier3] = 0f;
-                tierWeights[ItemTier.VoidTier1] = 0f;
-                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
-                tierWeights[ItemTier.VoidTier3] = 0f;
-            } else {
-                tierWeights[ItemTier.Tier1] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance;
-                tierWeights[ItemTier.Tier2] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT2Chance;
-                tierWeights[ItemTier.Tier3] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT3Chance;
-                tierWeights[ItemTier.VoidTier1] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT1Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
-                tierWeights[ItemTier.VoidTier2] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT2Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
-                tierWeights[ItemTier.VoidTier3] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseT3Chance * ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseVoidChance;
+            var forceTier = ItemTier.NoTier;
+            foreach(var kvp in ArtifactOfKnowledgePlugin.ItemSelectionConfig.TierUpgradeIntervals.OrderByDescending(kvp => kvp.Value)) {
+                if(kvp.Value == 0) break;
+                if((spentUpgrades % kvp.Value) == (kvp.Value - 1)) {
+                    forceTier = kvp.Key.tier;
+                    break;
+                }
             }
 
-            tierWeights[ItemTier.Lunar] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseLunarChance;
+            foreach(var kvp in ArtifactOfKnowledgePlugin.ItemSelectionConfig.TierWeights) {
+                float weight = kvp.Value;
+                if(forceTier != ItemTier.NoTier) {
+                    if(kvp.Key.tier.IsVoidEquivalent(forceTier))
+                        tierWeights[kvp.Key.tier] *= ArtifactOfKnowledgePlugin.ItemSelectionConfig.MultVoidWeight;
+                    else
+                        tierWeights[kvp.Key.tier] = 0f;
+                }
+                tierWeights[kvp.Key.tier] = weight;
+            }
 
             ModifyItemTierWeights?.Invoke(this, tierWeights);
 
@@ -269,8 +262,12 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             Dictionary<ItemTier[], int> maxOfAnyTier = new Dictionary<ItemTier[], int>();
             Dictionary<ItemTag[], (Color borderColor, int remaining)> guaranteedOfAnyTag = new Dictionary<ItemTag[], (Color borderColor, int remaining)>(); //todo: prevent selection of items which grant more of these once equal to total selections
 
-            maxOfAnyTier[new[] { ItemTier.Lunar }] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseMaxLunar;
-            maxOfAnyTier[new[] { ItemTier.VoidTier1, ItemTier.VoidTier2, ItemTier.VoidTier3 }] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseMaxVoid;
+            foreach(var kvp in ArtifactOfKnowledgePlugin.ItemSelectionConfig.TierCaps) {
+                if(kvp.Value == 0) continue;
+                maxOfAnyTier[new[] { kvp.Key.tier }] = kvp.Value;
+            }
+
+            maxOfAnyTier[new[] { ItemTier.VoidTier1, ItemTier.VoidTier2, ItemTier.VoidTier3 }] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.VoidCap;
 
             int selectionSize = ArtifactOfKnowledgePlugin.ItemSelectionConfig.SelectionSize;
 
