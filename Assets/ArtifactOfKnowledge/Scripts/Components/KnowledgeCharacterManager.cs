@@ -49,15 +49,19 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public delegate void ModifyGuaranteedOfAnyTagEventHandler(KnowledgeCharacterManager sender, Dictionary<ItemTag[], (Color borderColor, int remaining)> maxOfAnyTier);
         public delegate void ModifyItemTierWeightsEventHandler(KnowledgeCharacterManager sender, Dictionary<ItemTier, float> tierWeights);
         public delegate void ModifyItemSuperSelectionEventHandler(KnowledgeCharacterManager sender, List<WeightedSelection<PickupIndex>.ChoiceInfo> superSelection);
+        public delegate void ModifyUpgradePanelEventHandler(KnowledgeCharacterManager sender, KnowledgePickerPanel panel, bool isInitialization);
+        public delegate void CustomUpgradeActionEventHandler(KnowledgeCharacterManager sender, string ident);
         public static event ModifyMaxOfAnyTierEventHandler ModifyMaxOfAnyTier;
         public static event ModifyGuaranteedOfAnyTagEventHandler ModifyGuaranteedOfAnyTag;
         public static event ModifyItemTierWeightsEventHandler ModifyItemTierWeights;
         public static event ModifyItemSuperSelectionEventHandler ModifyItemSuperSelection;
+        public static event ModifyUpgradePanelEventHandler ModifyUpgradePanel;
+        public static event CustomUpgradeActionEventHandler OnCustomUpgradeAction;
 
         const int SAFETY_LEVEL_CAP = 9001;
 
         public enum UpgradeActionCode {
-            Select, Reroll, Banish
+            Select, Reroll, Banish, CustomAction
         }
 
         internal List<(PickupIndex index, Color borderColor)> currentSelection = new List<(PickupIndex index, Color borderColor)>();
@@ -170,6 +174,12 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             rerolls--;
 
             ServerGenerateSelection();
+        }
+
+        [Command]
+        public void CmdCustomUpgradeAction(string ident) {
+            if(!NetworkServer.active || !targetMasterObject) return;
+            OnCustomUpgradeAction?.Invoke(this, ident);
         }
         #endregion
 
@@ -384,6 +394,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 kpp.SetPickupOptions(currentSelection.ToArray());
                 var ltmc = kpp.transform.Find("MainPanel/Juice/Label").GetComponent<LanguageTextMeshController>();
                 ltmc.formatArgs = new object[] { unspentUpgrades, rerolls };
+                ModifyUpgradePanel?.Invoke(this, kpp, false);
             }
         }
 
@@ -422,10 +433,11 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public void ClientShowUpgradePanel() {
             if(!Util.HasEffectiveAuthority(gameObject) || currentUpgradePanel || !currentHud) return;
             currentUpgradePanel = GameObject.Instantiate(KnowledgePickerPanelModule.instance.panelPrefab, currentHud.transform.Find("MainContainer").Find("MainUIArea"));
-            var rerollButton = currentUpgradePanel.transform.Find("MainPanel/Juice/RerollButton").gameObject.GetComponent<HGButton>();
+            var rerollButton = currentUpgradePanel.transform.Find("MainPanel/Juice/ActionsContainer/RerollButton").gameObject.GetComponent<HGButton>();
             rerollButton.onClick.AddListener(() => { this.CmdReroll(); });
             var kpp = currentUpgradePanel.GetComponent<KnowledgePickerPanel>();
-            kpp.onButtonPressed = (i) => { this.CmdSelect(i); };
+            kpp.onItemButtonPressed = (i) => { this.CmdSelect(i); };
+            ModifyUpgradePanel?.Invoke(this, kpp, true);
             ClientUpdateUpgradePanel();
         }
 

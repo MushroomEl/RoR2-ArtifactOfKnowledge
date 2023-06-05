@@ -46,20 +46,30 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 			var container = tmpPanelSetup.transform.Find("MainPanel/Juice/IconContainer").gameObject;
 			container.GetComponent<RectTransform>().offsetMin = new Vector2(64, 96);
 
+			//create actions area
+			var actionButtonContainer = new GameObject("ActionsContainer", typeof(RectTransform));
+			actionButtonContainer.transform.parent = tmpPanelSetup.transform.Find("MainPanel/Juice");
+			var actionContainerRtf = actionButtonContainer.GetComponent<RectTransform>();
+			actionContainerRtf.anchorMax = new Vector2(0.8f, 0f);
+			actionContainerRtf.anchorMin = new Vector2(0.2f, 0f);
+			actionContainerRtf.pivot = new Vector2(0.5f, 0f);
+			actionContainerRtf.offsetMin = new Vector2(0f, 8f);
+			actionContainerRtf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 48f);
+			var actionContainerHlg = actionButtonContainer.AddComponent<HorizontalLayoutGroup>();
+			actionContainerHlg.spacing = 2f;
+			actionContainerHlg.padding = new RectOffset(2, 2, 2, 2);
+
 			//move cancel button
 			var cancelButton = tmpPanelSetup.transform.Find("MainPanel/Juice/CancelButton").gameObject;
-			var cancelButtonRTf = cancelButton.GetComponent<RectTransform>();
-			cancelButtonRTf.anchoredPosition = new Vector2(-120, 12);
+			cancelButton.transform.SetParent(actionButtonContainer.transform, false);
 
-			//create reroll button
-			var rerollButton = GameObject.Instantiate(cancelButton, cancelButton.transform.parent);
+			//create reroll button (also acts as template for further buttons)
+			var rerollButton = GameObject.Instantiate(cancelButton, actionButtonContainer.transform);
 			rerollButton.name = "RerollButton";
 			var rerollButtonButton = rerollButton.GetComponent<HGButton>();
 			for(var i = 0; i < rerollButtonButton.onClick.GetPersistentEventCount(); i++) {
 				rerollButtonButton.onClick.SetPersistentListenerState(i, UnityEngine.Events.UnityEventCallState.Off);
 			}
-			var rerollButtonRTf = rerollButton.GetComponent<RectTransform>();
-			rerollButtonRTf.anchoredPosition = new Vector2(120, 12);
 			var rerollLabel = rerollButton.GetComponent<LanguageTextMeshController>();
 			rerollLabel.token = "AKNOW_PANEL_REROLL";
 
@@ -98,7 +108,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
 	[RequireComponent(typeof(RectTransform))]
 	public class KnowledgePickerPanel : MonoBehaviour {
-		public Action<int> onButtonPressed;
+		public Action<int> onItemButtonPressed;
 		public GridLayoutGroup layoutGroup;
 		public RectTransform buttonContainer;
 		public GameObject buttonPrefab;
@@ -123,7 +133,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 		}
 
 		private void OnCreateButton(int index, MPButton button) {
-			button.onClick.AddListener(() => onButtonPressed?.Invoke(index));
+			button.onClick.AddListener(() => onItemButtonPressed?.Invoke(index));
 		}
 
 		public void SetPickupOptions((PickupIndex index, Color borderColor)[] options) {
@@ -220,6 +230,23 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 				}
 				tooltipProvider.SetContent(tooltipContent);
 			}
+		}
+
+		public void AddActionButton(string name, string token, Action onClick) {
+			var container = this.gameObject.transform.Find("MainPanel/Juice/ActionsContainer");
+			var buttonTemplate = this.gameObject.transform.Find("MainPanel/Juice/ActionsContainer/RerollButton").gameObject;
+			var newButton = GameObject.Instantiate(buttonTemplate, container.transform);
+			newButton.name = name;
+			var buttonLTMC = newButton.GetComponent<LanguageTextMeshController>();
+			buttonLTMC.token = token;
+			newButton.GetComponent<HGButton>().onClick.AddListener(() => { onClick?.Invoke(); });
+		}
+
+		public void SetActionButtonFormatArgs(string name, params object[] args) {
+			var buttonTsf = this.gameObject.transform.Find($"MainPanel/Juice/ActionsContainer/{name}");
+			if(!buttonTsf) return;
+			var buttonLTMC = buttonTsf.GetComponent<LanguageTextMeshController>();
+			buttonLTMC.formatArgs = args;
 		}
 	}
 }

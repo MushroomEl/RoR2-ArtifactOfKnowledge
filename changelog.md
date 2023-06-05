@@ -17,10 +17,8 @@
 		- KillHP, which scales based on either enemy base max health (Elite modifiers count, all other items and HP-per-enemy-level do not) or enemy max health stat (affected by all items and levels).
 		- TeleporterDrop, migrated from a previously standalone XpScaling setting.
 			- Has a separate config option to prevent teleporter drops, even if XP gain from such is disabled.
-		- DamageFracDealt, which scales based on percentage of damage stat.
-		- DamageDealt, which does not scale down.
-		- Gold, which optionally scales over time using the same formula applied to interactables.
-	- The Kills XP source, and several of the new XP sources, now allow XP sharing to be turned off. In this case, XP will be granted to the most relevant player (e.g. last-hit for kills).
+		- Purchase, which adds a purchase button to the upgrade panel; and (optionally) scales over time using the same formula applied to interactables.
+	- The Kills XP source, and several of the new XP sources, now allow XP sharing to be turned off. In this case, XP will be granted to the most relevant player (e.g. last-hit for kills). The Purchase XP source cannot be shared.
 - Added some accessibility configs:
 	- Visibility of keybind text hint in the experience bar: may now be visible (brighter text), subdued (previously only option), or hidden.
 	- Flashy animations on the experience bar while the player has unspent upgrades: may now be visible (previously only option), subdued (no aura, only the bar itself pulses), or hidden.

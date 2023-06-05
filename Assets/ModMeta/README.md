@@ -29,6 +29,7 @@ Only Experience and Teleporter Drop are enabled by default. The actual Upgrade X
 - **Kills**: Gain 1 XP per kill. Default scaling: 8XP +0.5 per level. May be configured to only grant XP to the player who struck the killing blow.
 - **Kill HP**: Gain 1 XP per 50 enemy base health on kill (scales with only Elite and Swarms health modifiers and nothing else). Default scaling: 8XP + 0.5 per level. May be configured to only grant XP to the player who struck the killing blow. May be configured to scale with total modified HP instead of base HP.
 - **Time**: Gain 1 XP per second while the run timer is progressing. Default scaling: 20XP +2 per level.
+- **Purchase**: Adds a Buy Level button to the Upgrade menu, which spends gold to grant the XP necessary to complete a level (cost will scale down within a level as other sources grant XP). Default scaling: $25 +3 per level, also scales with time.
 
 ### Items
 
@@ -68,6 +69,7 @@ Only Experience and Teleporter Drop are enabled by default. The actual Upgrade X
 - TODO: implement Rerolls as a Meta item, to display in the item bar for convenience.
 - TODO: gear swaps other than Equipment -- survivors, skills, *maybe* other artifacts, etc.
 - TODO: visual clientside feedback for invalid actions in the upgrade menu. Currently audio-only.
+- TODO: UpgradeActionCatalog.
 - See the GitHub repo for more!
 
 ## Changelog
@@ -91,10 +93,8 @@ The 5 latest updates are listed below. For a full changelog, see: https://github
 		- KillHP, which scales based on either enemy base max health (Elite modifiers count, all other items and HP-per-enemy-level do not) or enemy max health stat (affected by all items and levels).
 		- TeleporterDrop, migrated from a previously standalone XpScaling setting.
 			- Has a separate config option to prevent teleporter drops, even if XP gain from such is disabled.
-		- DamageFracDealt, which scales based on percentage of damage stat.
-		- DamageDealt, which does not scale down.
-		- Gold, which optionally scales over time using the same formula applied to interactables.
-	- The Kills XP source, and several of the new XP sources, now allow XP sharing to be turned off. In this case, XP will be granted to the most relevant player (e.g. last-hit for kills).
+		- Purchase, which adds a purchase button to the upgrade panel; and (optionally) scales over time using the same formula applied to interactables.
+	- The Kills XP source, and several of the new XP sources, now allow XP sharing to be turned off. In this case, XP will be granted to the most relevant player (e.g. last-hit for kills). The Purchase XP source cannot be shared.
 - Added some accessibility configs:
 	- Visibility of keybind text hint in the experience bar: may now be visible (brighter text), subdued (previously only option), or hidden.
 	- Flashy animations on the experience bar while the player has unspent upgrades: may now be visible (previously only option), subdued (no aura, only the bar itself pulses), or hidden.
