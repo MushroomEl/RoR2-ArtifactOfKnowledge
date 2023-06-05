@@ -24,12 +24,54 @@ Every 5 levels and 15 levels, the selection of items will be upgraded to uncommo
 
 Only Experience and Teleporter Drop are enabled by default. The actual Upgrade XP required for every level is always 1; individual XP Sources are instead scaled down by their XP-to-level requirements (e.g. with default config, Kills grants 1/8 actual Upgrade XP per kill at first level, 1/8.5 at second, etc.).
 
-- **Experience**: The vanilla XP system also grants Upgrade XP. Scales exponentially by default, with slightly faster levels than the vanilla system (8XP x1.4 per level; vanilla is 20XP x1.55 per level).
-- **Teleporter Drop**: Gain 1 XP per teleporter drop, divided by participating player count. Default scaling: 2XP, does not scale (clearing a teleporter always grants half a level). By default, prevents actual teleporter drops from spawning.
-- **Kills**: Gain 1 XP per kill. Default scaling: 8XP +0.5 per level. May be configured to only grant XP to the player who struck the killing blow.
-- **Kill HP**: Gain 1 XP per 50 enemy base health on kill (scales with only Elite and Swarms health modifiers and nothing else). Default scaling: 8XP + 0.5 per level. May be configured to only grant XP to the player who struck the killing blow. May be configured to scale with total modified HP instead of base HP.
-- **Time**: Gain 1 XP per second while the run timer is progressing. Default scaling: 20XP +2 per level.
-- **Purchase**: Adds a Buy Level button to the Upgrade menu, which spends gold to grant the XP necessary to complete a level (cost will scale down within a level as other sources grant XP). Default scaling: $25 +3 per level, also scales with time.
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Default Scaling</th>
+			<th>Notes</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><b>Experience</b></td>
+			<td>Gain 1 XP per character level XP.</td>
+			<td>8XP x1.4 per level</td>
+			<td>Enabled by default. For reference, vanilla level system uses 20XP x1.55 per level.</td>
+		</tr>
+		<tr>
+			<td><b>Teleporter Drop</b></td>
+			<td>Gain 1 XP per teleporter drop, divided by participating player count.</td>
+			<td>2XP, does not scale (clearing a teleporter always grants half a level)</td>
+			<td>Enabled by default. With default settings, clearing a teleporter always grants half a level.</td>
+		</tr>
+		<tr>
+			<td><b>Kills</b></td>
+			<td>Gain 1 XP per enemy killed.</td>
+			<td>8XP +0.5 per level</td>
+			<td>May be configured to only grant XP to the player who struck the killing blow.</td>
+		</tr>
+		<tr>
+			<td><b>Kill HP</b></td>
+			<td>Gain 1 XP per 50 enemy base health on kill.</td>
+			<td>8XP +0.5 per level</td>
+			<td>May be configured to only grant XP to the player who struck the killing blow. Only takes Elite and Swarms modifiers into account by default; may be configured to use total modified HP instead.</td>
+		</tr>
+		<tr>
+			<td><b>Time</b></td>
+			<td>Gain 1 XP per second while the run timer is progressing.</td>
+			<td>20XP +2 per level</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><b>Purchase</b></td>
+			<td>Adds a Buy Level button to the Upgrade menu, which spends gold to grant the XP necessary to complete the current level.</td>
+			<td>$25 +3 per level, also scales with time</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
 
 ### Items
 
