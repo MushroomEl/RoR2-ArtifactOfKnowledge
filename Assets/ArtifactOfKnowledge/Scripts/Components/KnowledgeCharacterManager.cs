@@ -150,7 +150,14 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             var inv = targetMasterObject.GetComponent<Inventory>();
 
             if(pdef.itemIndex != ItemIndex.None) {
-                inv.GiveItem(pdef.itemIndex);
+                int count = 1;
+                var idef = ItemCatalog.GetItemDef(pdef.itemIndex);
+                if(idef) {
+                    var itier = ItemTierCatalog.GetItemTierDef(idef.tier);
+                    if(itier)
+                        ArtifactOfKnowledgePlugin.ItemSelectionConfig.TierMultipliers.TryGetValue(itier, out count);
+                }
+                inv.GiveItem(pdef.itemIndex, count);
             } else if(pdef.equipmentIndex != EquipmentIndex.None) {
                 inv.SetEquipmentIndex(pdef.equipmentIndex);
             }

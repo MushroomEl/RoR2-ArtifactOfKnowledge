@@ -10,6 +10,9 @@ using UnityEngine.AddressableAssets;
 using System;
 using RoR2;
 using UnityEngine.Networking;
+using System.Collections.Generic;
+
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
     [BepInPlugin(ModGuid, ModName, ModVer)]
@@ -67,6 +70,9 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         }
 
         public class ItemSelectionConfigContainer : AutoConfigContainer {
+            //dictionaries have custom impl during awake/catalog-init, instead of direct attributes
+            public Dictionary<ItemTierDef, int> TierMultipliers = new Dictionary<ItemTierDef, int>();
+
             [AutoConfig("Weight for each offered item to be Common item. May be upgraded to Uncommon/Rare by relevant LevelInterval settings.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
             [AutoConfigRoOSlider("{0:P0}", 0f, 1f)]
             public float BaseT1Chance { get; internal set; } = 1f;
@@ -190,6 +196,17 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             earlyLoad = new T2Module[] { };
             T2Module.SetupAll_PluginAwake(earlyLoad);
             T2Module.SetupAll_PluginAwake(allModules.Except(earlyLoad));
+        }
+
+        [SystemInitializer(typeof(ItemTierCatalog))]
+        static void InitItemTierConfigs() {
+            foreach(var tier in ItemTierCatalog.allItemTierDefs) {
+                if(!tier.isDroppable) continue;
+                ItemSelectionConfig.TierMultipliers[tier] = 1; //default values
+            }
+            ItemSelectionConfig.Bind(typeof(ItemSelectionConfigContainer).GetPropertyCached(nameof(ItemSelectionConfigContainer.TierMultipliers)), cfgFile, "ArtifactOfKnowledge", "Server Item Multipliers", new AutoConfigAttribute($"<AIC.DictKeyField.{nameof(ItemTierDef.name)}>", "Items of this tier will grant this many copies when selected in the Upgrade menu.", AutoConfigFlags.BindDict | AutoConfigFlags.PreventNetMismatch, 1, int.MaxValue));
+            foreach(var k in ItemSelectionConfig.TierMultipliers.Keys)
+                ItemSelectionConfig.BindRoO(ItemSelectionConfig.FindConfig(nameof(ItemSelectionConfig.TierMultipliers), k), new AutoConfigRoOIntSliderAttribute("{0:N0}",1,10));
         }
 
         void ModifyItemTierPrefabs(Color metaColor) {
