@@ -2,6 +2,7 @@
 using TILER2;
 
 namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
+	[AutoConfigRoOInfoOverrides(typeof(ArtifactOfKnowledgePlugin), modGuid = "com.ThinkInvisible.ArtifactOfKnowledge.XpSources", modName = "ArtifactOfKnowledge.XpSources")]
 	public class KillHP : XpSource<KillHP> {
 
 		////// Config //////

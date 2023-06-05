@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 namespace ThinkInvisible.ArtifactOfKnowledge.XpSources {
+	[AutoConfigRoOInfoOverrides(typeof(ArtifactOfKnowledgePlugin), modGuid = "com.ThinkInvisible.ArtifactOfKnowledge.XpSources", modName = "ArtifactOfKnowledge.XpSources")]
 	public class Purchase : XpSource<Purchase> {
 
 		////// Config //////
