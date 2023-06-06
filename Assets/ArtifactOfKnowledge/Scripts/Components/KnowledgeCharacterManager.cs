@@ -193,19 +193,19 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
             Dictionary<ItemTier, float> tierWeights = new Dictionary<ItemTier, float>();
 
-            var forceTier = ItemTier.NoTier;
-            foreach(var kvp in ItemSelection.instance.TierUpgradeIntervals.OrderByDescending(kvp => kvp.Value)) {
-                if(kvp.Value == 0) break;
-                if((spentUpgrades % kvp.Value) == (kvp.Value - 1)) {
-                    forceTier = kvp.Key.tier;
+            ItemTier[] forceTiers = new ItemTier[] { };
+            foreach(var group in ItemSelection.instance.TierUpgradeIntervals.OrderByDescending(kvp => kvp.Value).GroupBy(kvp => kvp.Value)) {
+                if(group.Key == 0) break;
+                if((spentUpgrades % group.Key) == (group.Key - 1)) {
+                    forceTiers = group.Select(kvp => kvp.Key.tier).ToArray();
                     break;
                 }
             }
 
             foreach(var kvp in ItemSelection.instance.TierWeights) {
                 float weight = kvp.Value;
-                if(forceTier != ItemTier.NoTier)
-                    weight = (forceTier == kvp.Key.tier) ? 1f : 0f;
+                if(forceTiers.Length > 0)
+                    weight = forceTiers.Contains(kvp.Key.tier) ? 1f : 0f;
                 tierWeights[kvp.Key.tier] = weight;
             }
 
