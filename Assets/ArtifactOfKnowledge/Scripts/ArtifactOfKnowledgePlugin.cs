@@ -9,9 +9,6 @@ using System.Linq;
 using UnityEngine.AddressableAssets;
 using System;
 using RoR2;
-using UnityEngine.Networking;
-using System.Collections.Generic;
-using static ThinkInvisible.ArtifactOfKnowledge.MiscUtil;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
