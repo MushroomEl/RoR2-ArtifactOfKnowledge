@@ -5,7 +5,7 @@ using TILER2;
 using UnityEngine.Networking;
 
 namespace ThinkInvisible.ArtifactOfKnowledge {
-    [AutoConfigRoOInfoOverrides(typeof(ArtifactOfKnowledgePlugin), modGuid = "com.ThinkInvisible.ArtifactOfKnowledge.Selection", modName = "ArtifactOfKnowledge.Selection", categoryName = "Selection.Misc")]
+    [AutoConfigRoOInfoOverrides(typeof(ArtifactOfKnowledgePlugin), modGuid = "com.ThinkInvisible.ArtifactOfKnowledge.Selection", modName = "ArtifactOfKnowledge.ItemSelection")]
     public class ItemSelection : T2Module<ItemSelection> {
         public override bool managedEnable => false;
 
