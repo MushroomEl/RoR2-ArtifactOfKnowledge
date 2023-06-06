@@ -137,6 +137,9 @@ The 5 latest updates are listed below. For a full changelog, see: https://github
 			- Has a separate config option to prevent teleporter drops, even if XP gain from such is disabled.
 		- Purchase, which adds a purchase button to the upgrade panel; and (optionally) scales over time using the same formula applied to interactables.
 	- The Kills XP source, and several of the new XP sources, now allow XP sharing to be turned off. In this case, XP will be granted to the most relevant player (e.g. last-hit for kills). The Purchase XP source cannot be shared.
+- Selection config rework:
+	- Selection configs are now auto-populated by tier, with special handling remaining for Void tiers. Other mods that add new item tiers should be compatible, and Boss-tier items are now configurable.
+	- Selection configs are now displayed in a new config super-category in Risk of Options.
 - Added an option to grant multiple copies of an item at once dependent on tier, disabled by default.
 - Added some accessibility configs:
 	- Visibility of keybind text hint in the experience bar: may now be visible (brighter text), subdued (previously only option), or hidden.
