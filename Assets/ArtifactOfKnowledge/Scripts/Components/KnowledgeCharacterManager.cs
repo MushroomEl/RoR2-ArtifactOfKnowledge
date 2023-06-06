@@ -208,13 +208,17 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
 
             foreach(var kvp in ItemSelection.instance.TierWeights) {
                 float weight = kvp.Value;
-                if(forceTier != ItemTier.NoTier) {
-                    if(kvp.Key.tier.IsVoidEquivalent(forceTier))
-                        tierWeights[kvp.Key.tier] *= ItemSelection.instance.MultVoidWeight;
-                    else
-                        tierWeights[kvp.Key.tier] = 0f;
-                }
+                if(forceTier != ItemTier.NoTier && forceTier != kvp.Key.tier)
+                    tierWeights[kvp.Key.tier] = 0f;
                 tierWeights[kvp.Key.tier] = weight;
+            }
+
+            foreach(var tier in ItemTierCatalog.allItemTierDefs) {
+                if(!tier || tier.tier.IsVoid()) continue;
+                var voidEquiv = tier.tier.GetVoidEquivalent();
+                if(voidEquiv == ItemTier.NoTier) continue;
+                var voidEquivDef = ItemTierCatalog.GetItemTierDef(voidEquiv);
+                tierWeights[voidEquiv] = tierWeights[tier.tier] * ItemSelection.instance.MultVoidWeight;
             }
 
             ModifyItemTierWeights?.Invoke(this, tierWeights);

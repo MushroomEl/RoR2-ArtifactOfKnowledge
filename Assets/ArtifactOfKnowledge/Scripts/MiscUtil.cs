@@ -19,5 +19,15 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 || (other == ItemTier.Tier3 && self == ItemTier.VoidTier3)
                 || (other == ItemTier.Boss && self == ItemTier.VoidBoss);
         }
+
+        internal static ItemTier GetVoidEquivalent(this ItemTier self) {
+            switch(self) {
+                case ItemTier.Tier1: return ItemTier.VoidTier1;
+                case ItemTier.Tier2: return ItemTier.VoidTier2;
+                case ItemTier.Tier3: return ItemTier.VoidTier3;
+                case ItemTier.Boss: return ItemTier.VoidBoss;
+            }
+            return ItemTier.NoTier;
+        }
     }
 }
