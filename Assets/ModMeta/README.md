@@ -120,6 +120,10 @@ The 5 latest updates are listed below. For a full changelog, see: https://github
 
 (🌧︎: Involves an accepted GitHub Pull Request or other significant assistance from the community. Thanks for your help!)
 
+**3.0.1**
+
+- Fixed items from non-directly-configurable tiers granting 0 stacks when selected in the Upgrade menu.
+
 **3.0.0**
 
 - Added the Meta item tier.
@@ -172,9 +176,3 @@ The 5 latest updates are listed below. For a full changelog, see: https://github
 
 - Fixed hidden and WorldUnique (e.g. scrap) items being inadvertently offered by Artifact of Knowledge.
 - Added a custom package icon, which was previously an accidental copy from Tinker's Satchel.
-
-**1.0.0**
-
-- Initial version.
-- Adds the Artifact of Knowledge, which presents a selection of 5 items and 2 gear for every level of a secondary level-up system; and prevents any Sacrifice-banned interactables (mostly chests) from spawning.
-- Adds an upgrade menu popup, and an upgrade experience bar in the main HUD.

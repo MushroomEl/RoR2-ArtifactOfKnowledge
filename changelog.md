@@ -2,6 +2,10 @@
 
 (🌧︎: Involves an accepted GitHub Pull Request or other significant assistance from the community. Thanks for your help!)
 
+**3.0.1**
+
+- Fixed items from non-directly-configurable tiers granting 0 stacks when selected in the Upgrade menu.
+
 **3.0.0**
 
 - Added the Meta item tier.
