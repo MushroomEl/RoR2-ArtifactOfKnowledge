@@ -155,7 +155,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 if(idef) {
                     var itier = ItemTierCatalog.GetItemTierDef(idef.tier);
                     if(itier)
-                        ArtifactOfKnowledgePlugin.ItemSelectionConfig.TierMultipliers.TryGetValue(itier, out count);
+                        ItemSelection.instance.TierMultipliers.TryGetValue(itier, out count);
                 }
                 inv.GiveItem(pdef.itemIndex, count);
             } else if(pdef.equipmentIndex != EquipmentIndex.None) {
@@ -198,7 +198,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             Dictionary<ItemTier, float> tierWeights = new Dictionary<ItemTier, float>();
 
             var forceTier = ItemTier.NoTier;
-            foreach(var kvp in ArtifactOfKnowledgePlugin.ItemSelectionConfig.TierUpgradeIntervals.OrderByDescending(kvp => kvp.Value)) {
+            foreach(var kvp in ItemSelection.instance.TierUpgradeIntervals.OrderByDescending(kvp => kvp.Value)) {
                 if(kvp.Value == 0) break;
                 if((spentUpgrades % kvp.Value) == (kvp.Value - 1)) {
                     forceTier = kvp.Key.tier;
@@ -206,11 +206,11 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 }
             }
 
-            foreach(var kvp in ArtifactOfKnowledgePlugin.ItemSelectionConfig.TierWeights) {
+            foreach(var kvp in ItemSelection.instance.TierWeights) {
                 float weight = kvp.Value;
                 if(forceTier != ItemTier.NoTier) {
                     if(kvp.Key.tier.IsVoidEquivalent(forceTier))
-                        tierWeights[kvp.Key.tier] *= ArtifactOfKnowledgePlugin.ItemSelectionConfig.MultVoidWeight;
+                        tierWeights[kvp.Key.tier] *= ItemSelection.instance.MultVoidWeight;
                     else
                         tierWeights[kvp.Key.tier] = 0f;
                 }
@@ -239,13 +239,13 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             foreach(var drop in Run.instance.availableEquipmentDropList) {
                 if(banished.Contains(drop)) continue;
                 if(drop == currentEquipment) continue;
-                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseEquipChance);
+                retv.AddChoice(drop, ItemSelection.instance.BaseEquipChance);
             }
 
             foreach(var drop in Run.instance.availableLunarEquipmentDropList) {
                 if(banished.Contains(drop)) continue;
                 if(drop == currentEquipment) continue;
-                retv.AddChoice(drop, ArtifactOfKnowledgePlugin.ItemSelectionConfig.BaseLunarEquipChance);
+                retv.AddChoice(drop, ItemSelection.instance.BaseLunarEquipChance);
             }
 
             return retv;
@@ -262,16 +262,16 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             Dictionary<ItemTier[], int> maxOfAnyTier = new Dictionary<ItemTier[], int>();
             Dictionary<ItemTag[], (Color borderColor, int remaining)> guaranteedOfAnyTag = new Dictionary<ItemTag[], (Color borderColor, int remaining)>(); //todo: prevent selection of items which grant more of these once equal to total selections
 
-            foreach(var kvp in ArtifactOfKnowledgePlugin.ItemSelectionConfig.TierCaps) {
+            foreach(var kvp in ItemSelection.instance.TierCaps) {
                 if(kvp.Value == 0) continue;
                 maxOfAnyTier[new[] { kvp.Key.tier }] = kvp.Value;
             }
 
-            maxOfAnyTier[new[] { ItemTier.VoidTier1, ItemTier.VoidTier2, ItemTier.VoidTier3 }] = ArtifactOfKnowledgePlugin.ItemSelectionConfig.VoidCap;
+            maxOfAnyTier[new[] { ItemTier.VoidTier1, ItemTier.VoidTier2, ItemTier.VoidTier3 }] = ItemSelection.instance.VoidCap;
 
-            int selectionSize = ArtifactOfKnowledgePlugin.ItemSelectionConfig.SelectionSize;
+            int selectionSize = ItemSelection.instance.SelectionSize;
 
-            if(ArtifactOfKnowledgePlugin.ItemSelectionConfig.GuaranteeCategories) {
+            if(ItemSelection.instance.GuaranteeCategories) {
                 guaranteedOfAnyTag[new[] { ItemTag.Damage }] = (new Color(1f, 0.2f, 0.2f), 1);
                 guaranteedOfAnyTag[new[] { ItemTag.Utility }] = (new Color(0.2f, 0.2f, 1f), 1);
                 guaranteedOfAnyTag[new[] { ItemTag.Healing }] = (new Color(0.2f, 1f, 0.2f), 1);
@@ -357,7 +357,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                     }
                 }
             }
-            for(int i = 0; i < ArtifactOfKnowledgePlugin.ItemSelectionConfig.GearSelectionSize; i++) {
+            for(int i = 0; i < ItemSelection.instance.GearSelectionSize; i++) {
                 if(newGearSuperSelection.Count == 0) {
                     currentSelection.Add((PickupIndex.none, new Color(0.5f, 0.5f, 0.5f)));
                 } else {
