@@ -220,7 +220,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             ModifyItemTierWeights?.Invoke(this, tierWeights);
 
             foreach(var idef in ItemCatalog.allItemDefs) {
-                if(!idef || idef.itemIndex == ItemIndex.None || !tierWeights.ContainsKey(idef.tier) || !Run.instance.IsItemAvailable(idef.itemIndex)) continue;
+                if(!idef || idef.itemIndex == ItemIndex.None || !tierWeights.ContainsKey(idef.tier) || tierWeights[idef.tier] <= 0f || !Run.instance.IsItemAvailable(idef.itemIndex)) continue;
                 if(idef.hidden || idef.ContainsTag(ItemTag.WorldUnique)) continue;
                 retv.Add(new WeightedSelection<PickupIndex>.ChoiceInfo {
                     value = PickupCatalog.FindPickupIndex(idef.itemIndex),
