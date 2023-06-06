@@ -83,7 +83,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             public float MultVoidWeight { get; internal set; } = 0.06f;
 
             [AutoConfig("Total cap for Void items of any tier to appear. 0 for unlimited. DOES NOT stack with normal tiers in the Caps section.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-            [AutoConfigRoOIntSlider("{0:P0}", 0, 30)]
+            [AutoConfigRoOIntSlider("{0:N0}", 0, 30)]
             public int VoidCap { get; internal set; } = 1;
 
             [AutoConfig("Weight for each offered gear to be an equipment.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
