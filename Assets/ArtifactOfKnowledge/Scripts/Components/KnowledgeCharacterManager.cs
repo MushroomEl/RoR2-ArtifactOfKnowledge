@@ -150,8 +150,12 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
                 var idef = ItemCatalog.GetItemDef(pdef.itemIndex);
                 if(idef) {
                     var itier = ItemTierCatalog.GetItemTierDef(idef.tier);
-                    if(itier)
-                        ItemSelection.instance.TierMultipliers.TryGetValue(itier, out count);
+                    if(itier && ItemSelection.instance.TierMultipliers.ContainsKey(itier))
+                        count = ItemSelection.instance.TierMultipliers[itier];
+                }
+                if(count <= 0) {
+                    ArtifactOfKnowledgePlugin._logger.LogWarning($"ItemTierDef {idef} is in TierMultipliers but has invalid value {count} (<= 0)");
+                    count = 1;
                 }
                 inv.GiveItem(pdef.itemIndex, count);
             } else if(pdef.equipmentIndex != EquipmentIndex.None) {
