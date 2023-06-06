@@ -209,7 +209,7 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
             foreach(var kvp in ItemSelection.instance.TierWeights) {
                 float weight = kvp.Value;
                 if(forceTier != ItemTier.NoTier && forceTier != kvp.Key.tier)
-                    tierWeights[kvp.Key.tier] = 0f;
+                    weight = 0f;
                 tierWeights[kvp.Key.tier] = weight;
             }
 
