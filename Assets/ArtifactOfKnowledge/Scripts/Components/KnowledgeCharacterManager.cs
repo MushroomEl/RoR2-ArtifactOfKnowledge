@@ -58,8 +58,6 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public static event ModifyUpgradePanelEventHandler ModifyUpgradePanel;
         public static event CustomUpgradeActionEventHandler OnCustomUpgradeAction;
 
-        const int SAFETY_LEVEL_CAP = 9001;
-
         public enum UpgradeActionCode {
             Select, Reroll, Banish, CustomAction
         }
@@ -105,16 +103,14 @@ namespace ThinkInvisible.ArtifactOfKnowledge {
         public void ServerAddXp(float amount) {
             if(!targetMasterObject) return;
             xp += amount;
-            bool changedLevel = false;
-            while(xp >= 1f && level < SAFETY_LEVEL_CAP) {
-                changedLevel = true;
-                unspentUpgrades++;
-                xp -= 1f;
-            }
-            if(changedLevel)
+            if(xp >= 1f) {
+                unspentUpgrades += Mathf.FloorToInt(xp);
+                xp %= 1f;
                 RpcLevelUpEvent();
-
-            RpcForceUpdateUI(changedLevel);
+                RpcForceUpdateUI(true);
+            } else {
+                RpcForceUpdateUI(false);
+            }
         }
 
         [Server]
