@@ -1,0 +1,31 @@
+﻿{
+	"strings": {
+		"ARTIFACTOFKNOWLEDGE_KNOWLEDGEARTIFACT_NAME": "知识神器",
+		"ARTIFACTOFKNOWLEDGE_KNOWLEDGEARTIFACT_DESC": "添加第二个升级系统，升级后可选择道具，取代大多数箱子。包括其他特殊情况，如商店刷新。",
+
+		"AKNOW_PANEL_TEXT": "<b>知识就是力量</b>\r\n<i>选择一个新物品，或者更换一个装备</i>\r\n- {0} 升级点 // {1} 刷新点 -",
+		"AKNOW_PANEL_REROLL": "刷新",
+		"AKNOW_UNSPENT": "{0} 未使用的升级",
+		"AKNOW_UNSPENT_HINTSUBDUED": "{0} 未使用的升级 <style=cStack>按下 [{1}]</style>",
+		"AKNOW_UNSPENT_HINT": "{0} 未使用的升级 // 按下 [{1}]",
+		"AKNOW_PURCHASE": "购买等级: ${0}",
+		"AKNOW_VOID_NAME": "无",
+		"AKNOW_VOID_DESC_0": "你已经用尽了所有的选择。这里什么都没留下。",
+		"AKNOW_VOID_DESC_1": "你凝视着虚空……",
+		"AKNOW_VOID_DESC_2": "你 <i>没有</i>收获! 你 <i>失败</i>了! 美好的 <i>一天</i>，朋友！",
+		"AKNOW_VOID_DESC_3": "这是怎么发生的，我们应该聪明点吗？",
+		"AKNOW_VOID_DESC_4": "也许该轻点按禁用按钮。",
+		"AKNOW_VOID_DESC_5": "你的牌都用完了。",
+		"AKNOW_VOID_DESC_6": "这里什么都没有。",
+
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_NAME": "潮汐锁定",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_PICKUP": "增加月球物品出现的机会。",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_DESC": "升级菜单将提供最多 <style=cIsUtility>1 <style=cStack>(+1 每层)</style></style> 更多 <style=cIsLunar>月球</style> 物品。 <style=cIsLunar>月球</style> 物品出现增加 <style=cIsUtility>{0} <style=cStack>(+{0} 每层)</style></style> 几率。 获得 <style=cIsUtility>1 刷新点</style> 每层。",
+		"ARTIFACTOFKNOWLEDGE_TIDALPULL_LORE": "",
+
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_NAME": "虚空锚定",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_PICKUP": "增加虚空物品出现的机会。",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_DESC": "升级菜单将提供最多 <style=cIsUtility>1 <style=cStack>(+1 每层)</style></style> 更多 <style=cIsVoid>虚空</style> 物品。<style=cIsVoid>虚空</style> 物品出现增加 <style=cIsUtility>{0} <style=cStack>(+{0} 每层)</style></style> 几率。获得 <style=cIsUtility>1 刷新点</style> 每层。",
+		"ARTIFACTOFKNOWLEDGE_UNDERTOW_LORE": ""
+	}
+}
